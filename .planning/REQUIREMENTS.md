@@ -124,24 +124,61 @@
 
 ## Traceability
 
-*Populated during roadmap creation.*
+*Updated 2026-04-09 after roadmap creation.*
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01–05 | Phase 1 | Pending |
-| PROF-01–07 | Phase 2 | Pending |
-| CLIE-01–04 | Phase 2 | Pending |
-| INVC-01–10 | Phase 3 | Pending |
-| PAYM-01–03 | Phase 3 | Pending |
-| EXPN-01–03 | Phase 4 | Pending |
-| DECL-01–08 | Phase 4 | Pending |
-| DASH-01–05 | Phase 5 | Pending |
+| AUTH-01 | Phase 1 — Firebase + Auth | Pending |
+| AUTH-02 | Phase 1 — Firebase + Auth | Pending |
+| AUTH-03 | Phase 1 — Firebase + Auth | Pending |
+| AUTH-04 | Phase 1 — Firebase + Auth | Pending |
+| AUTH-05 | Phase 1 — Firebase + Auth | Pending |
+| PROF-01 | Phase 2 — Profile + Clients | Pending |
+| PROF-02 | Phase 2 — Profile + Clients | Pending |
+| PROF-03 | Phase 2 — Profile + Clients | Pending |
+| PROF-04 | Phase 2 — Profile + Clients | Pending |
+| PROF-05 | Phase 2 — Profile + Clients | Pending |
+| PROF-06 | Phase 2 — Profile + Clients | Pending |
+| PROF-07 | Phase 2 — Profile + Clients | Pending |
+| CLIE-01 | Phase 2 — Profile + Clients | Pending |
+| CLIE-02 | Phase 2 — Profile + Clients | Pending |
+| CLIE-03 | Phase 2 — Profile + Clients | Pending |
+| CLIE-04 | Phase 2 — Profile + Clients | Pending |
+| INVC-01 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-02 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-03 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-04 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-05 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-06 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-07 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-08 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-09 | Phase 3 — Invoices + PDF + Payments | Pending |
+| INVC-10 | Phase 3 — Invoices + PDF + Payments | Pending |
+| PAYM-01 | Phase 3 — Invoices + PDF + Payments | Pending |
+| PAYM-02 | Phase 3 — Invoices + PDF + Payments | Pending |
+| PAYM-03 | Phase 3 — Invoices + PDF + Payments | Pending |
+| EXPN-01 | Phase 4 — Expenses | Pending |
+| EXPN-02 | Phase 4 — Expenses | Pending |
+| EXPN-03 | Phase 4 — Expenses | Pending |
+| DECL-01 | Phase 5 — Tax Declarations | Pending |
+| DECL-02 | Phase 5 — Tax Declarations | Pending |
+| DECL-03 | Phase 5 — Tax Declarations | Pending |
+| DECL-04 | Phase 5 — Tax Declarations | Pending |
+| DECL-05 | Phase 5 — Tax Declarations | Pending |
+| DECL-06 | Phase 5 — Tax Declarations | Pending |
+| DECL-07 | Phase 5 — Tax Declarations | Pending |
+| DECL-08 | Phase 5 — Tax Declarations | Pending |
+| DASH-01 | Phase 6 — Dashboard | Pending |
+| DASH-02 | Phase 6 — Dashboard | Pending |
+| DASH-03 | Phase 6 — Dashboard | Pending |
+| DASH-04 | Phase 6 — Dashboard | Pending |
+| DASH-05 | Phase 6 — Dashboard | Pending |
 
 **Coverage:**
-- v1 requirements: 43 total
-- Mapped to phases: 43
+- v1 requirements: 45 total (AUTH: 5, PROF: 7, CLIE: 4, INVC: 10, PAYM: 3, EXPN: 3, DECL: 8, DASH: 5)
+- Mapped to phases: 45
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-09*
-*Last updated: 2026-04-09 after initial definition*
+*Last updated: 2026-04-09 after roadmap creation — full per-requirement traceability populated*
