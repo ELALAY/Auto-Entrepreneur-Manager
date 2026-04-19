@@ -9,6 +9,8 @@ class UserProfile {
     required this.ice,
     required this.ifNumber,
     required this.cnssNumber,
+    required this.taxProfessionnelle,
+    required this.phone,
     required this.activityCategory,
     required this.address,
     this.logoUrl,
@@ -22,6 +24,8 @@ class UserProfile {
   final String ice;
   final String ifNumber;
   final String cnssNumber;
+  final String taxProfessionnelle;
+  final String phone;
   final ActivityCategory activityCategory;
   final String address;
   final String? logoUrl;
@@ -35,6 +39,8 @@ class UserProfile {
     String? ice,
     String? ifNumber,
     String? cnssNumber,
+    String? taxProfessionnelle,
+    String? phone,
     ActivityCategory? activityCategory,
     String? address,
     String? logoUrl,
@@ -50,6 +56,8 @@ class UserProfile {
       ice: ice ?? this.ice,
       ifNumber: ifNumber ?? this.ifNumber,
       cnssNumber: cnssNumber ?? this.cnssNumber,
+      taxProfessionnelle: taxProfessionnelle ?? this.taxProfessionnelle,
+      phone: phone ?? this.phone,
       activityCategory: activityCategory ?? this.activityCategory,
       address: address ?? this.address,
       logoUrl: clearLogoUrl ? null : (logoUrl ?? this.logoUrl),

@@ -207,6 +207,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileFieldCnss => 'CNSS number';
 
   @override
+  String get profileFieldTaxProfessionnelle => 'Professional tax number (TP)';
+
+  @override
+  String get profileFieldPhone => 'Phone';
+
+  @override
   String get profileFieldAddress => 'Address';
 
   @override

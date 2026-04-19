@@ -43,7 +43,7 @@ void main() {
       cnssNumber: 'CNSS1',
       activityCategory: ActivityCategory.liberal,
       address: 'Rabat',
-      branding: BrandingConfig(accentColorArgb: 0xFF00695C),
+      branding: BrandingConfig(accentColorArgb: 0xFF00695C), taxProfessionnelle: '32546', phone: '+1234567890',
     );
 
     final bytes = await buildInvoicePdfBytes(

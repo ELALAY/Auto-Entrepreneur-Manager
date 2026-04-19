@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(flutter pub:*)"
+      "Bash(flutter pub:*)",
+      "Read(//c/Users/elala/OneDrive/Bureau/Projects/Auto-Entrepreneur-Manager/.cursor/**)",
+      "Bash(ls -la lib/l10n/*.arb)",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(grep -v \"^$\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\elala\\OneDrive\\Bureau\\Projects\\Auto-Entrepreneur-Manager\\auto_entrepreneur_manager\\assets"
     ]
   }
 }

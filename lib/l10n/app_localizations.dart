@@ -476,6 +476,18 @@ abstract class AppLocalizations {
   /// **'CNSS number'**
   String get profileFieldCnss;
 
+  /// No description provided for @profileFieldTaxProfessionnelle.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional tax number (TP)'**
+  String get profileFieldTaxProfessionnelle;
+
+  /// No description provided for @profileFieldPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get profileFieldPhone;
+
   /// No description provided for @profileFieldAddress.
   ///
   /// In en, this message translates to:

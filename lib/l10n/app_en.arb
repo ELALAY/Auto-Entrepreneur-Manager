@@ -64,6 +64,8 @@
   "profileFieldIce": "ICE",
   "profileFieldIf": "IF (tax identifier)",
   "profileFieldCnss": "CNSS number",
+  "profileFieldTaxProfessionnelle": "Professional tax number (TP)",
+  "profileFieldPhone": "Phone",
   "profileFieldAddress": "Address",
   "profileSectionActivity": "Activity category",
   "activityCommercialShort": "Commercial",

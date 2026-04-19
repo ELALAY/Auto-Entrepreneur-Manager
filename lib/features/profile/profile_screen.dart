@@ -26,6 +26,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _ice = TextEditingController();
   final _ifNumber = TextEditingController();
   final _cnss = TextEditingController();
+  final _taxProfessionnelle = TextEditingController();
+  final _phone = TextEditingController();
   final _address = TextEditingController();
 
   late final SignatureController _signatureController;
@@ -54,6 +56,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _ice.dispose();
     _ifNumber.dispose();
     _cnss.dispose();
+    _taxProfessionnelle.dispose();
+    _phone.dispose();
     _address.dispose();
     _signatureController.dispose();
     super.dispose();
@@ -62,12 +66,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _applyRemote(UserProfile? p) {
     if (_syncedFromRemote) return;
     _syncedFromRemote = true;
-    if (p == null) return;
+    if (p == null) {
+      return;
+    }
     _businessName.text = p.name;
     _cin.text = p.cin;
     _ice.text = p.ice;
     _ifNumber.text = p.ifNumber;
     _cnss.text = p.cnssNumber;
+    _taxProfessionnelle.text = p.taxProfessionnelle;
+    _phone.text = p.phone;
     _address.text = p.address;
     _category = p.activityCategory;
     _logoUrl = p.logoUrl;
@@ -85,6 +93,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ice: _ice.text,
       ifNumber: _ifNumber.text,
       cnssNumber: _cnss.text,
+      taxProfessionnelle: _taxProfessionnelle.text,
+      phone: _phone.text,
       activityCategory: _category,
       address: _address.text,
       logoUrl: _logoUrl,
@@ -106,9 +116,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final profile = _buildProfile(uid);
       await ref.read(profileRepositoryProvider).saveProfile(profile);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.profileSaved)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,16 +144,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         : 'image/jpeg';
     setState(() => _saving = true);
     try {
-      final url =
-          await ref.read(profileRepositoryProvider).uploadLogo(uid, bytes, mime);
+      final url = await ref
+          .read(profileRepositoryProvider)
+          .uploadLogo(uid, bytes, mime);
       setState(() {
         _logoUrl = url;
       });
       await ref.read(profileRepositoryProvider).saveProfile(_buildProfile(uid));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileLogoUploaded)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.profileLogoUploaded)));
       }
     } catch (_) {
       if (mounted) {
@@ -177,24 +188,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     if (_signatureController.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileSignatureEmpty)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.profileSignatureEmpty)));
       return;
     }
     final bytes = await _signatureController.toPngBytes();
     if (bytes == null) return;
     setState(() => _saving = true);
     try {
-      final url =
-          await ref.read(profileRepositoryProvider).uploadSignature(uid, bytes);
+      final url = await ref
+          .read(profileRepositoryProvider)
+          .uploadSignature(uid, bytes);
       setState(() => _signatureUrl = url);
       _signatureController.clear();
       await ref.read(profileRepositoryProvider).saveProfile(_buildProfile(uid));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileSignatureSaved)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.profileSignatureSaved)));
       }
     } catch (_) {
       if (mounted) {
@@ -219,14 +231,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final bytes = await pick.readAsBytes();
     setState(() => _saving = true);
     try {
-      final url =
-          await ref.read(profileRepositoryProvider).uploadSignature(uid, bytes);
+      final url = await ref
+          .read(profileRepositoryProvider)
+          .uploadSignature(uid, bytes);
       setState(() => _signatureUrl = url);
       await ref.read(profileRepositoryProvider).saveProfile(_buildProfile(uid));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileSignatureSaved)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.profileSignatureSaved)));
       }
     } catch (_) {
       if (mounted) {
@@ -322,10 +335,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             )
           else
-            TextButton(
-              onPressed: _saveProfile,
-              child: Text(l10n.actionSave),
-            ),
+            TextButton(onPressed: _saveProfile, child: Text(l10n.actionSave)),
         ],
       ),
       body: ListView(
@@ -385,6 +395,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               labelText: l10n.profileFieldCnss,
               border: const OutlineInputBorder(),
             ),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _taxProfessionnelle,
+            decoration: InputDecoration(
+              labelText: l10n.profileFieldTaxProfessionnelle,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _phone,
+            decoration: InputDecoration(
+              labelText: l10n.profileFieldPhone,
+              border: const OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.phone,
           ),
           const SizedBox(height: 12),
           TextFormField(
@@ -478,7 +505,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: _accentColor ?? theme.colorScheme.surfaceContainerHighest,
+                    color:
+                        _accentColor ??
+                        theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: theme.dividerColor),
                   ),
@@ -499,8 +528,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               border: const OutlineInputBorder(),
             ),
             items: [
-              DropdownMenuItem(value: 'default', child: Text(l10n.templateDefault)),
-              DropdownMenuItem(value: 'bordered', child: Text(l10n.templateBordered)),
+              DropdownMenuItem(
+                value: 'default',
+                child: Text(l10n.templateDefault),
+              ),
+              DropdownMenuItem(
+                value: 'bordered',
+                child: Text(l10n.templateBordered),
+              ),
             ],
             onChanged: (v) {
               if (v != null) setState(() => _templateId = v);
@@ -544,7 +579,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Text(l10n.profileSectionSignature, style: theme.textTheme.titleMedium),
+          Text(
+            l10n.profileSectionSignature,
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           if (_signatureUrl != null)
             Padding(
@@ -614,17 +652,17 @@ class _ActivityExplainer extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final (title, body) = switch (category) {
       ActivityCategory.commercial => (
-          l10n.activityCommercialTitle,
-          l10n.activityCommercialBody,
-        ),
+        l10n.activityCommercialTitle,
+        l10n.activityCommercialBody,
+      ),
       ActivityCategory.artisanal => (
-          l10n.activityArtisanalTitle,
-          l10n.activityArtisanalBody,
-        ),
+        l10n.activityArtisanalTitle,
+        l10n.activityArtisanalBody,
+      ),
       ActivityCategory.liberal => (
-          l10n.activityLiberalTitle,
-          l10n.activityLiberalBody,
-        ),
+        l10n.activityLiberalTitle,
+        l10n.activityLiberalBody,
+      ),
     };
     return ExpansionTile(
       title: Text(title),

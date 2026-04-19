@@ -17,7 +17,7 @@ void main() {
       ifNumber: 'IF',
       cnssNumber: 'CNSS',
       activityCategory: ActivityCategory.commercial,
-      address: 'Addr',
+      address: 'Addr', taxProfessionnelle: '32546', phone: '+1234567890',
     );
     expect(isProfileComplete(p), false);
   });
@@ -31,7 +31,7 @@ void main() {
       ifNumber: '12345678',
       cnssNumber: '1234567',
       activityCategory: ActivityCategory.liberal,
-      address: 'Casablanca',
+      address: 'Casablanca', taxProfessionnelle: '32546', phone: '+1234567890',
     );
     expect(isProfileComplete(p), true);
   });
