@@ -5,6 +5,14 @@
   "irRateArtisanal": 0.005,
   "irRateLiberal": 0.005,
   "irRateServices": 0.01,
+  "cnssQuarterBands": [
+    { "maxQuarterlyMad": 2500, "amountMad": 300 },
+    { "maxQuarterlyMad": 5000, "amountMad": 570 },
+    { "maxQuarterlyMad": 10000, "amountMad": 720 },
+    { "maxQuarterlyMad": 25000, "amountMad": 1050 },
+    { "maxQuarterlyMad": 50000, "amountMad": 2250 },
+    { "maxQuarterlyMad": null, "amountMad": 3600 }
+  ],
   "cnssNil": 300,
   "cnssTo2500": 570,
   "cnssTo5000": 720,

@@ -345,7 +345,10 @@ class InvoiceDetailScreen extends ConsumerWidget {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final amountCtrl = TextEditingController();
+    final remaining = inv.balance.clamp(0.0, double.infinity);
+    final amountCtrl = TextEditingController(
+      text: remaining > 0.001 ? remaining.toStringAsFixed(2) : '',
+    );
     var date = DateTime.now();
     var method = PaymentMethod.virement;
 
@@ -416,7 +419,11 @@ class InvoiceDetailScreen extends ConsumerWidget {
     );
 
     final amountText = amountCtrl.text;
-    amountCtrl.dispose();
+    // Do not dispose until after this frame: the dialog route may still be
+    // unwinding and the TextField would touch a disposed controller.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      amountCtrl.dispose();
+    });
 
     if (ok != true || !context.mounted) return;
     final amt = double.tryParse(amountText.replaceAll(',', '.'));
@@ -528,7 +535,9 @@ class InvoiceDetailScreen extends ConsumerWidget {
     );
 
     final amountText = amountCtrl.text;
-    amountCtrl.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      amountCtrl.dispose();
+    });
 
     if (result == null || !context.mounted) return;
 

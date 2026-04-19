@@ -132,6 +132,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardSectionShortcuts => 'Shortcuts';
 
   @override
+  String dashboardDeclarationBannerActive(
+    int quarter,
+    int year,
+    int daysRemaining,
+    String deadline,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      daysRemaining,
+      locale: localeName,
+      other: '$daysRemaining days left',
+      one: '1 day left',
+    );
+    return 'Q$quarter $year declaration: $_temp0 (deadline $deadline).';
+  }
+
+  @override
+  String dashboardDeclarationBannerLastDay(
+    int quarter,
+    int year,
+    String deadline,
+  ) {
+    return 'Q$quarter $year declaration: last day to file (deadline $deadline).';
+  }
+
+  @override
+  String dashboardDeclarationBannerOverdue(
+    int quarter,
+    int year,
+    int daysOverdue,
+    String deadline,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      daysOverdue,
+      locale: localeName,
+      other: '$daysOverdue days',
+      one: '1 day',
+    );
+    return 'Q$quarter $year declaration: overdue by $_temp0 (deadline was $deadline).';
+  }
+
+  @override
+  String get dashboardDeclarationBannerOpen => 'Open declaration';
+
+  @override
   String get moreSectionBusiness => 'Business';
 
   @override
@@ -221,6 +265,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileHasCnssHint =>
       'Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.';
+
+  @override
+  String get profileSectionInvoiceNumbers => 'Invoice numbers';
+
+  @override
+  String get profileInvoicePrefixLabel => 'Invoice prefix';
+
+  @override
+  String get profileInvoicePrefixHint =>
+      'Short text such as INV or FA (inserted wherever your pattern uses the prefix token).';
+
+  @override
+  String get profileInvoicePatternLabel => 'Number format';
+
+  @override
+  String get profileInvoicePatternHint =>
+      'Use the tokens prefix, year, and count — each wrapped in curly braces. Underscores and order are up to you. The default pattern yields numbers like INV_2026_045. The count token is required.';
+
+  @override
+  String get profileInvoiceCountDigitsLabel => 'Digits for sequence';
+
+  @override
+  String get profileInvoiceCountDigitsHint =>
+      'Minimum width for the yearly counter (e.g. 3 → 045).';
+
+  @override
+  String get profileInvoicePreview => 'Preview';
+
+  @override
+  String get profileInvoicePatternInvalid =>
+      'The format must include the count token (in curly braces) so each invoice gets a unique yearly number.';
 
   @override
   String get profileSectionActivity => 'Activity category';

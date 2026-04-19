@@ -10,6 +10,7 @@ import '../../data/firebase_providers.dart';
 import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/branding_config.dart';
+import '../../models/invoice_number_config.dart';
 import '../../models/user_profile.dart';
 import '../../providers/profile_providers.dart';
 
@@ -29,6 +30,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _taxProfessionnelle = TextEditingController();
   final _phone = TextEditingController();
   final _address = TextEditingController();
+  final _invoicePrefix = TextEditingController(text: 'INV');
+  final _invoicePattern =
+      TextEditingController(text: '{prefix}_{year}_{count}');
+  final _invoiceCountDigits = TextEditingController(text: '3');
 
   late final SignatureController _signatureController;
   ActivityCategory _category = ActivityCategory.commercial;
@@ -60,6 +65,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _taxProfessionnelle.dispose();
     _phone.dispose();
     _address.dispose();
+    _invoicePrefix.dispose();
+    _invoicePattern.dispose();
+    _invoiceCountDigits.dispose();
     _signatureController.dispose();
     super.dispose();
   }
@@ -85,6 +93,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _templateId = p.branding.templateId ?? 'default';
     final argb = p.branding.accentColorArgb;
     _accentColor = argb != null ? Color(argb) : null;
+    _invoicePrefix.text = p.invoiceNumberConfig.prefix;
+    _invoicePattern.text = p.invoiceNumberConfig.pattern;
+    _invoiceCountDigits.text =
+        p.invoiceNumberConfig.countDigits.clamp(1, 12).toString();
   }
 
   UserProfile _buildProfile(String uid) {
@@ -107,6 +119,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         accentColorArgb: _accentColor?.value,
         templateId: _templateId == 'default' ? null : _templateId,
       ),
+      invoiceNumberConfig: InvoiceNumberConfig(
+        prefix: _invoicePrefix.text,
+        pattern: _invoicePattern.text,
+        countDigits: (int.tryParse(_invoiceCountDigits.text) ?? 3).clamp(1, 12),
+      ),
+    );
+  }
+
+  String _previewInvoiceNumber() {
+    final cfg = normalizeInvoiceNumberConfig(
+      InvoiceNumberConfig(
+        prefix: _invoicePrefix.text,
+        pattern: _invoicePattern.text,
+        countDigits: int.tryParse(_invoiceCountDigits.text) ?? 3,
+      ),
+    );
+    return formatInvoiceNumber(
+      cfg,
+      year: DateTime.now().year,
+      count: 45,
     );
   }
 
@@ -114,6 +146,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
+    final pattern = _invoicePattern.text.trim();
+    if (!isValidInvoiceNumberPattern(pattern)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileInvoicePatternInvalid)),
+      );
+      return;
+    }
     setState(() => _saving = true);
     try {
       final profile = _buildProfile(uid);
@@ -458,6 +497,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             subtitle: Text(l10n.profileHasCnssHint),
             value: _hasCnss,
             onChanged: (v) => setState(() => _hasCnss = v),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            l10n.profileSectionInvoiceNumbers,
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _invoicePrefix,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              labelText: l10n.profileInvoicePrefixLabel,
+              helperText: l10n.profileInvoicePrefixHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _invoicePattern,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              labelText: l10n.profileInvoicePatternLabel,
+              helperText: l10n.profileInvoicePatternHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _invoiceCountDigits,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              labelText: l10n.profileInvoiceCountDigitsLabel,
+              helperText: l10n.profileInvoiceCountDigitsHint,
+              border: const OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${l10n.profileInvoicePreview}: ${_previewInvoiceNumber()}',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 24),
           Text(l10n.profileSectionBranding, style: theme.textTheme.titleMedium),

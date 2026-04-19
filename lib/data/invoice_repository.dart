@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/enums.dart';
+import '../models/invoice_number_config.dart';
 import '../models/invoice.dart';
 import '../models/invoice_item.dart';
 import '../models/invoice_summary.dart';
@@ -60,7 +61,7 @@ class InvoiceRepository {
     return sum;
   }
 
-  /// Assigns sequential [number] via transaction; returns new invoice id.
+  /// Assigns a per-calendar-year sequential number and formats it; returns new invoice id.
   Future<String> createInvoice({
     required String uid,
     required String clientId,
@@ -73,6 +74,7 @@ class InvoiceRepository {
     required InvoiceStatus status,
     required List<InvoiceItem> items,
     required bool signatureEnabled,
+    required InvoiceNumberConfig invoiceNumberConfig,
     String? templateId,
     String? notes,
   }) async {
@@ -82,11 +84,31 @@ class InvoiceRepository {
 
     await _firestore.runTransaction((txn) async {
       final cSnap = await txn.get(_counterRef(uid));
-      final last = (cSnap.data()?['lastNumber'] as num?)?.toInt() ?? 0;
-      final next = last + 1;
-      final numberStr = next.toString().padLeft(6, '0');
+      final counterData = cSnap.data() ?? {};
+      final yearKey = issueDate.year.toString();
+      var yearLast = <String, dynamic>{};
+      final rawYear = counterData['yearLast'];
+      if (rawYear is Map) {
+        yearLast = Map<String, dynamic>.from(
+          rawYear.map((k, v) => MapEntry(k.toString(), v)),
+        );
+      }
+      final lastForYear = (yearLast[yearKey] as num?)?.toInt() ?? 0;
+      final next = lastForYear + 1;
+      yearLast[yearKey] = next;
 
-      txn.set(_counterRef(uid), {'lastNumber': next}, SetOptions(merge: true));
+      final cfg = normalizeInvoiceNumberConfig(invoiceNumberConfig);
+      final numberStr = formatInvoiceNumber(
+        cfg,
+        year: issueDate.year,
+        count: next,
+      );
+
+      txn.set(
+        _counterRef(uid),
+        {'yearLast': yearLast},
+        SetOptions(merge: true),
+      );
 
       txn.set(ref, {
         'userId': uid,

@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../domain/tax/activity_category.dart';
 import '../models/branding_config.dart';
+import '../models/invoice_number_config.dart';
 import '../models/user_profile.dart';
 
 class ProfileRepository {
@@ -87,6 +88,10 @@ class ProfileRepository {
     );
     final accent = data['brandingAccentArgb'];
     final template = data['brandingTemplateId'] as String?;
+    final invPrefix = data['invoiceNumberPrefix'] as String? ?? 'INV';
+    final invPattern = data['invoiceNumberPattern'] as String? ??
+        '{prefix}_{year}_{count}';
+    final invDigits = (data['invoiceNumberCountDigits'] as num?)?.toInt() ?? 3;
     return UserProfile(
       uid: uid,
       name: data['businessName'] as String? ?? '',
@@ -104,6 +109,11 @@ class ProfileRepository {
       branding: BrandingConfig(
         accentColorArgb: accent is int ? accent : null,
         templateId: template,
+      ),
+      invoiceNumberConfig: InvoiceNumberConfig(
+        prefix: invPrefix,
+        pattern: invPattern,
+        countDigits: invDigits.clamp(1, 12),
       ),
     );
   }
@@ -124,6 +134,11 @@ class ProfileRepository {
       'signatureUrl': p.signatureUrl,
       'brandingAccentArgb': p.branding.accentColorArgb,
       'brandingTemplateId': p.branding.templateId,
+      'invoiceNumberPrefix': p.invoiceNumberConfig.prefix.trim(),
+      'invoiceNumberPattern': p.invoiceNumberConfig.pattern.trim().isEmpty
+          ? '{prefix}_{year}_{count}'
+          : p.invoiceNumberConfig.pattern.trim(),
+      'invoiceNumberCountDigits': p.invoiceNumberConfig.countDigits.clamp(1, 12),
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

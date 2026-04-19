@@ -1,36 +1,5 @@
 import 'activity_category.dart';
-
-/// Fixed-amount CNSS brackets loaded from Firestore `config/taxRates`.
-/// Each bracket maps a quarterly revenue range to a flat CNSS amount (MAD).
-class CnssBrackets {
-  const CnssBrackets({
-    required this.nil,
-    required this.to2500,
-    required this.to5000,
-    required this.to10000,
-    required this.to25000,
-    required this.to50000,
-    required this.above50000,
-  });
-
-  final double nil;         // Revenue = 0 DH
-  final double to2500;      // 1 – 2,500 DH
-  final double to5000;      // 2,501 – 5,000 DH
-  final double to10000;     // 5,001 – 10,000 DH
-  final double to25000;     // 10,001 – 25,000 DH
-  final double to50000;     // 25,001 – 50,000 DH
-  final double above50000;  // > 50,000 DH
-
-  double amountFor(double quarterlyRevenue) {
-    if (quarterlyRevenue <= 0) return nil;
-    if (quarterlyRevenue <= 2500) return to2500;
-    if (quarterlyRevenue <= 5000) return to5000;
-    if (quarterlyRevenue <= 10000) return to10000;
-    if (quarterlyRevenue <= 25000) return to25000;
-    if (quarterlyRevenue <= 50000) return to50000;
-    return above50000;
-  }
-}
+import 'cnss_quarter_bracket.dart';
 
 /// Versioned IR/CNSS parameters loaded from Firestore `config/taxRates`.
 class TaxRatesConfig {
@@ -41,7 +10,9 @@ class TaxRatesConfig {
     required this.irRateArtisanal,
     required this.irRateLiberal,
     required this.irRateServices,
-    required this.cnssBrackets,
+    required this.cnssRate,
+    required this.cnssMinimumQuarterlyBaseMad,
+    this.quarterlyCnssBands,
   });
 
   final int version;
@@ -52,7 +23,15 @@ class TaxRatesConfig {
   final double irRateLiberal;
   final double irRateServices;
 
-  final CnssBrackets cnssBrackets;
+  /// Legacy model: CNSS ≈ taxable base × rate with a minimum quarterly base (plancher).
+  final double cnssRate;
+  final double cnssMinimumQuarterlyBaseMad;
+
+  /// Morocco AE flat quarterly CNSS by revenue band — when non-empty, replaces [cnssRate] math.
+  final List<CnssQuarterBracket>? quarterlyCnssBands;
+
+  bool get usesQuarterlyFlatCnss =>
+      quarterlyCnssBands != null && quarterlyCnssBands!.isNotEmpty;
 
   double irRateFor(ActivityCategory category) => switch (category) {
         ActivityCategory.commercial => irRateCommercial,
@@ -61,7 +40,31 @@ class TaxRatesConfig {
         ActivityCategory.services => irRateServices,
       };
 
-  /// Parses Firestore document data. Returns null if required fields are missing.
+  /// Bundled defaults (matches [config/taxRates.firestore.json]) when Firestore has no doc yet.
+  static TaxRatesConfig bundledMoroccoDefaults() {
+    final parsed = fromFirestoreData(_bundledMoroccoMap);
+    assert(parsed != null, 'bundledMoroccoDefaults map must parse');
+    return parsed!;
+  }
+
+  static final Map<String, dynamic> _bundledMoroccoMap = {
+    'version': 3,
+    'effectiveFrom': '2026-01-01',
+    'irRateCommercial': 0.005,
+    'irRateArtisanal': 0.005,
+    'irRateLiberal': 0.005,
+    'irRateServices': 0.01,
+    'cnssQuarterBands': [
+      {'maxQuarterlyMad': 2500, 'amountMad': 300},
+      {'maxQuarterlyMad': 5000, 'amountMad': 570},
+      {'maxQuarterlyMad': 10000, 'amountMad': 720},
+      {'maxQuarterlyMad': 25000, 'amountMad': 1050},
+      {'maxQuarterlyMad': 50000, 'amountMad': 2250},
+      {'maxQuarterlyMad': null, 'amountMad': 3600},
+    ],
+  };
+
+  /// Parses Firestore document data. Returns null only when IR rates are unusable.
   static TaxRatesConfig? fromFirestoreData(Map<String, dynamic>? data) {
     if (data == null) return null;
     final version = (data['version'] as num?)?.toInt();
@@ -73,19 +76,23 @@ class TaxRatesConfig {
     final irA = d('irRateArtisanal');
     final irL = d('irRateLiberal');
     final irS = d('irRateServices');
-    final cnssNil = d('cnssNil');
-    final to2500 = d('cnssTo2500');
-    final to5000 = d('cnssTo5000');
-    final to10000 = d('cnssTo10000');
-    final to25000 = d('cnssTo25000');
-    final to50000 = d('cnssTo50000');
-    final above = d('cnssAbove50000');
-
-    if (irC == null || irA == null || irL == null || irS == null ||
-        cnssNil == null || to2500 == null || to5000 == null ||
-        to10000 == null || to25000 == null || to50000 == null || above == null) {
+    if (irC == null || irA == null || irL == null || irS == null) {
       return null;
     }
+
+    final bands = parseQuarterBandsFromFirestore(data['cnssQuarterBands']);
+    final cnssRate = d('cnssRate');
+    final cnssMinBase = d('cnssMinimumQuarterlyBaseMad');
+
+    final hasLegacy = cnssRate != null && cnssMinBase != null;
+    final hasBands = bands != null && bands.isNotEmpty;
+
+    if (!hasBands && !hasLegacy) return null;
+
+    final effectiveBands = bands;
+    final effectiveRate = cnssRate ?? (hasBands ? 0.0 : null);
+    final effectiveMinBase = cnssMinBase ?? (hasBands ? 0.0 : null);
+    if (effectiveRate == null || effectiveMinBase == null) return null;
 
     return TaxRatesConfig(
       version: version,
@@ -94,15 +101,37 @@ class TaxRatesConfig {
       irRateArtisanal: irA,
       irRateLiberal: irL,
       irRateServices: irS,
-      cnssBrackets: CnssBrackets(
-        nil: cnssNil,
-        to2500: to2500,
-        to5000: to5000,
-        to10000: to10000,
-        to25000: to25000,
-        to50000: to50000,
-        above50000: above,
-      ),
+      cnssRate: effectiveRate,
+      cnssMinimumQuarterlyBaseMad: effectiveMinBase,
+      quarterlyCnssBands: effectiveBands,
     );
   }
+
+  static List<CnssQuarterBracket>? parseQuarterBandsFromFirestore(dynamic raw) {
+    if (raw is! List || raw.isEmpty) return null;
+    final list = <CnssQuarterBracket>[];
+    for (final e in raw) {
+      if (e is! Map) continue;
+      final amount = (e['amountMad'] as num?)?.toDouble();
+      if (amount == null) continue;
+      final maxRaw = e['maxQuarterlyMad'];
+      final maxMad = maxRaw == null
+          ? double.infinity
+          : (maxRaw as num).toDouble();
+      list.add(
+        CnssQuarterBracket(
+          maxQuarterlyRevenueMad: maxMad,
+          amountMad: amount,
+        ),
+      );
+    }
+    if (list.isEmpty) return null;
+    list.sort(
+      (a, b) => _sortKey(a).compareTo(_sortKey(b)),
+    );
+    return list;
+  }
+
+  static double _sortKey(CnssQuarterBracket b) =>
+      b.maxQuarterlyRevenueMad.isFinite ? b.maxQuarterlyRevenueMad : double.maxFinite;
 }

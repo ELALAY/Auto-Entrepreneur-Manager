@@ -9,6 +9,7 @@ import '../../models/client.dart';
 import '../../models/enums.dart';
 import '../../models/invoice.dart';
 import '../../models/invoice_item.dart';
+import '../../models/invoice_number_config.dart';
 import '../../providers/client_providers.dart';
 import '../../providers/invoice_providers.dart';
 
@@ -170,6 +171,10 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
         );
         await ref.read(invoiceRepositoryProvider).updateInvoice(updated);
       } else {
+        final profile =
+            await ref.read(profileRepositoryProvider).getProfile(uid);
+        final invoiceCfg =
+            profile?.invoiceNumberConfig ?? const InvoiceNumberConfig();
         final newId = await ref.read(invoiceRepositoryProvider).createInvoice(
               uid: uid,
               clientId: client.id,
@@ -182,6 +187,7 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
               status: _status,
               items: items,
               signatureEnabled: _signatureEnabled,
+              invoiceNumberConfig: invoiceCfg,
               notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
             );
         if (!mounted) return;

@@ -135,6 +135,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardSectionShortcuts => 'Raccourcis';
 
   @override
+  String dashboardDeclarationBannerActive(
+    int quarter,
+    int year,
+    int daysRemaining,
+    String deadline,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      daysRemaining,
+      locale: localeName,
+      other: '$daysRemaining jours',
+      one: '1 jour',
+    );
+    return 'Déclaration Q$quarter $year : il reste $_temp0 (échéance le $deadline).';
+  }
+
+  @override
+  String dashboardDeclarationBannerLastDay(
+    int quarter,
+    int year,
+    String deadline,
+  ) {
+    return 'Déclaration Q$quarter $year : dernier jour pour déposer (échéance le $deadline).';
+  }
+
+  @override
+  String dashboardDeclarationBannerOverdue(
+    int quarter,
+    int year,
+    int daysOverdue,
+    String deadline,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      daysOverdue,
+      locale: localeName,
+      other: '$daysOverdue jours',
+      one: '1 jour',
+    );
+    return 'Déclaration Q$quarter $year : en retard de $_temp0 (échéance le $deadline).';
+  }
+
+  @override
+  String get dashboardDeclarationBannerOpen => 'Ouvrir la déclaration';
+
+  @override
   String get moreSectionBusiness => 'Activité';
 
   @override
@@ -225,6 +269,37 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get profileHasCnssHint =>
       'Activez si vous cotisez à la CNSS par un autre régime (ex. salarié). Votre déclaration AE affichera alors 0 MAD pour la CNSS.';
+
+  @override
+  String get profileSectionInvoiceNumbers => 'Numérotation des factures';
+
+  @override
+  String get profileInvoicePrefixLabel => 'Préfixe de facture';
+
+  @override
+  String get profileInvoicePrefixHint =>
+      'Court texte comme INV ou FA (inséré partout où le motif utilise le jeton prefix).';
+
+  @override
+  String get profileInvoicePatternLabel => 'Format du numéro';
+
+  @override
+  String get profileInvoicePatternHint =>
+      'Utilisez les jetons prefix, year et count — chacun entre accolades. Séparateurs et ordre libres. Le motif par défaut donne par ex. INV_2026_045. Le jeton count est obligatoire.';
+
+  @override
+  String get profileInvoiceCountDigitsLabel => 'Chiffres pour la séquence';
+
+  @override
+  String get profileInvoiceCountDigitsHint =>
+      'Largeur minimale du compteur annuel (ex. 3 → 045).';
+
+  @override
+  String get profileInvoicePreview => 'Aperçu';
+
+  @override
+  String get profileInvoicePatternInvalid =>
+      'Le format doit inclure le jeton count (entre accolades) pour un numéro séquentiel unique par année.';
 
   @override
   String get profileSectionActivity => 'Catégorie d\'activité';

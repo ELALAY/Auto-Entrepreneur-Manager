@@ -5,10 +5,14 @@ import '../models/declaration.dart';
 import '../domain/tax/tax_rates_config.dart';
 import '../providers/auth_provider.dart';
 
-String declarationPeriodKey(int year, int quarter) => '$year-$quarter';
+export '../utils/declaration_filing_deadline.dart' show declarationPeriodKey;
 
-final taxRatesStreamProvider = StreamProvider<TaxRatesConfig?>((ref) {
-  return ref.watch(taxRatesRepositoryProvider).watchTaxRates();
+/// Effective rates from Firestore `config/taxRates`, or [TaxRatesConfig.bundledMoroccoDefaults]
+/// when the document is missing / unparsable so declarations always load.
+final taxRatesStreamProvider = StreamProvider<TaxRatesConfig>((ref) {
+  return ref.watch(taxRatesRepositoryProvider).watchTaxRates().map(
+        (remote) => remote ?? TaxRatesConfig.bundledMoroccoDefaults(),
+      );
 });
 
 final declarationsListStreamProvider = StreamProvider<List<Declaration>>((ref) {

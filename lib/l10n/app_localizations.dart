@@ -338,6 +338,44 @@ abstract class AppLocalizations {
   /// **'Shortcuts'**
   String get dashboardSectionShortcuts;
 
+  /// No description provided for @dashboardDeclarationBannerActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Q{quarter} {year} declaration: {daysRemaining, plural, one{1 day left} other{{daysRemaining} days left}} (deadline {deadline}).'**
+  String dashboardDeclarationBannerActive(
+    int quarter,
+    int year,
+    int daysRemaining,
+    String deadline,
+  );
+
+  /// No description provided for @dashboardDeclarationBannerLastDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Q{quarter} {year} declaration: last day to file (deadline {deadline}).'**
+  String dashboardDeclarationBannerLastDay(
+    int quarter,
+    int year,
+    String deadline,
+  );
+
+  /// No description provided for @dashboardDeclarationBannerOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Q{quarter} {year} declaration: overdue by {daysOverdue, plural, one{1 day} other{{daysOverdue} days}} (deadline was {deadline}).'**
+  String dashboardDeclarationBannerOverdue(
+    int quarter,
+    int year,
+    int daysOverdue,
+    String deadline,
+  );
+
+  /// No description provided for @dashboardDeclarationBannerOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open declaration'**
+  String get dashboardDeclarationBannerOpen;
+
   /// No description provided for @moreSectionBusiness.
   ///
   /// In en, this message translates to:
@@ -505,6 +543,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.'**
   String get profileHasCnssHint;
+
+  /// No description provided for @profileSectionInvoiceNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice numbers'**
+  String get profileSectionInvoiceNumbers;
+
+  /// No description provided for @profileInvoicePrefixLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice prefix'**
+  String get profileInvoicePrefixLabel;
+
+  /// No description provided for @profileInvoicePrefixHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Short text such as INV or FA (inserted wherever your pattern uses the prefix token).'**
+  String get profileInvoicePrefixHint;
+
+  /// No description provided for @profileInvoicePatternLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Number format'**
+  String get profileInvoicePatternLabel;
+
+  /// No description provided for @profileInvoicePatternHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the tokens prefix, year, and count — each wrapped in curly braces. Underscores and order are up to you. The default pattern yields numbers like INV_2026_045. The count token is required.'**
+  String get profileInvoicePatternHint;
+
+  /// No description provided for @profileInvoiceCountDigitsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Digits for sequence'**
+  String get profileInvoiceCountDigitsLabel;
+
+  /// No description provided for @profileInvoiceCountDigitsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum width for the yearly counter (e.g. 3 → 045).'**
+  String get profileInvoiceCountDigitsHint;
+
+  /// No description provided for @profileInvoicePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get profileInvoicePreview;
+
+  /// No description provided for @profileInvoicePatternInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The format must include the count token (in curly braces) so each invoice gets a unique yearly number.'**
+  String get profileInvoicePatternInvalid;
 
   /// No description provided for @profileSectionActivity.
   ///

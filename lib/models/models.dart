@@ -2,6 +2,7 @@ export 'branding_config.dart';
 export 'client.dart';
 export 'declaration.dart';
 export 'enums.dart';
+export 'invoice_number_config.dart';
 export 'expense.dart';
 export 'invoice.dart';
 export 'invoice_item.dart';

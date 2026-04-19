@@ -5,11 +5,15 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/invoice_summary.dart';
+import '../../models/enums.dart';
+import '../../providers/declaration_providers.dart';
 import '../../providers/invoice_providers.dart';
 import '../../theme/app_colors.dart';
+import '../../utils/declaration_filing_deadline.dart';
 import '../../utils/quarter_bounds.dart';
 import '../../widgets/quick_link_tile.dart';
 import '../../widgets/stat_card.dart';
+import 'dashboard_declaration_reminder.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -22,18 +26,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   static int _currentQuarter(DateTime now) => ((now.month - 1) ~/ 3) + 1;
-
-  /// Last day of the month following the end of [quarter] in [year].
-  static DateTime _deadlineFor(int year, int quarter) {
-    final quarterEndMonth = quarter * 3; // Q1→3, Q2→6, Q3→9, Q4→12
-    final deadlineMonth = quarterEndMonth + 1;
-    if (deadlineMonth > 12) {
-      // Q4 deadline = Jan 31 next year
-      return DateTime(year + 1, 2, 0); // day 0 of Feb = Jan 31
-    }
-    // last day of deadlineMonth
-    return DateTime(year, deadlineMonth + 1, 0);
-  }
 
   // ── Build ──────────────────────────────────────────────────────────────────
 
@@ -95,6 +87,10 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          ),
+
+          const SliverToBoxAdapter(
+            child: DashboardDeclarationReminder(),
           ),
 
           // ── Stats ─────────────────────────────────────────────────────────
@@ -161,19 +157,36 @@ class DashboardScreen extends ConsumerWidget {
 
 // ── Stats section (extracted so it has its own context for formatting) ────────
 
-class _StatsSection extends StatelessWidget {
+class _StatsSection extends ConsumerWidget {
   const _StatsSection({required this.summaries});
 
   final List<InvoiceSummary> summaries;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final now = DateTime.now();
-    final q = DashboardScreen._currentQuarter(now);
+    final calendarQ = DashboardScreen._currentQuarter(now);
     final year = now.year;
-    final deadline = DashboardScreen._deadlineFor(year, q);
-    final daysLeft = deadline.difference(DateTime(now.year, now.month, now.day)).inDays;
+    final declarationsAsync = ref.watch(declarationsListStreamProvider);
+    DeclarationFilingStatus? filing = declarationsAsync.maybeWhen(
+      data: (list) {
+        bool filed(int y, int q) => list.any(
+              (d) =>
+                  d.year == y &&
+                  d.quarter == q &&
+                  d.status == DeclarationStatus.filed,
+            );
+        final urgent =
+            outstandingDeclarationFiling(now: now, isQuarterFiled: filed);
+        return urgent ??
+            nextDeclarationFilingCountdown(now, isQuarterFiled: filed);
+      },
+      orElse: () => null,
+    );
+    final fq = filing?.declarationQuarter ?? calendarQ;
+    final fy = filing?.declarationYear ?? year;
+    final daysLeft = filing?.daysRemaining;
 
     // ── Compute stats from summaries ─────────────────────────────────────────
     double qRevenue = 0;
@@ -184,7 +197,7 @@ class _StatsSection extends StatelessWidget {
     for (final s in summaries) {
       // Quarter revenue: payments collected on invoices issued this quarter
       // (approximation: uses issueDate for bucketing, same as billing period)
-      if (dateOnlyInQuarter(s.issueDate, year, q)) {
+      if (dateOnlyInQuarter(s.issueDate, year, calendarQ)) {
         qRevenue += s.paidTotal;
       }
       // YTD: all invoices issued this calendar year
@@ -242,7 +255,7 @@ class _StatsSection extends StatelessWidget {
             children: [
               StatCard(
                 icon: Icons.payments_outlined,
-                label: 'Encaissé Q$q · $year',
+                label: 'Encaissé Q$calendarQ · $year',
                 value: DashboardScreen._mad(qRevenue),
                 iconColor: AppColors.growthDark,
               ),
@@ -263,13 +276,17 @@ class _StatsSection extends StatelessWidget {
               ),
               StatCard(
                 icon: Icons.event_outlined,
-                label: 'Délai déclaration Q$q',
-                value: daysLeft >= 0 ? '$daysLeft j' : 'Passé',
-                iconColor: daysLeft <= 14
-                    ? theme.colorScheme.error
-                    : daysLeft <= 30
-                        ? AppColors.moneyDeep
-                        : AppColors.growthDark,
+                label: 'Délai déclaration Q$fq · $fy',
+                value: daysLeft == null
+                    ? '—'
+                    : (daysLeft >= 0 ? '$daysLeft j' : 'Passé'),
+                iconColor: daysLeft == null
+                    ? AppColors.growthDark
+                    : daysLeft <= 14
+                        ? theme.colorScheme.error
+                        : daysLeft <= 30
+                            ? AppColors.moneyDeep
+                            : AppColors.growthDark,
                 onTap: () => context.go('/declarations'),
               ),
             ],

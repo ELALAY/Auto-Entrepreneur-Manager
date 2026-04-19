@@ -41,6 +41,33 @@
   "dashboardTagline": "Revenue, cash flow, and compliance — in one place.",
   "dashboardStatsHint": "Totals update as you create and collect invoices.",
   "dashboardSectionShortcuts": "Shortcuts",
+  "dashboardDeclarationBannerActive": "Q{quarter} {year} declaration: {daysRemaining, plural, one{1 day left} other{{daysRemaining} days left}} (deadline {deadline}).",
+  "@dashboardDeclarationBannerActive": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" },
+      "daysRemaining": { "type": "int" },
+      "deadline": { "type": "String" }
+    }
+  },
+  "dashboardDeclarationBannerLastDay": "Q{quarter} {year} declaration: last day to file (deadline {deadline}).",
+  "@dashboardDeclarationBannerLastDay": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" },
+      "deadline": { "type": "String" }
+    }
+  },
+  "dashboardDeclarationBannerOverdue": "Q{quarter} {year} declaration: overdue by {daysOverdue, plural, one{1 day} other{{daysOverdue} days}} (deadline was {deadline}).",
+  "@dashboardDeclarationBannerOverdue": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" },
+      "daysOverdue": { "type": "int" },
+      "deadline": { "type": "String" }
+    }
+  },
+  "dashboardDeclarationBannerOpen": "Open declaration",
   "moreSectionBusiness": "Business",
   "moreSectionAccount": "Account",
   "placeholderInvoices": "Create and manage invoices linked to clients.",
@@ -69,6 +96,15 @@
   "profileFieldAddress": "Address",
   "profileHasCnssLabel": "Already covered by CNSS",
   "profileHasCnssHint": "Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.",
+  "profileSectionInvoiceNumbers": "Invoice numbers",
+  "profileInvoicePrefixLabel": "Invoice prefix",
+  "profileInvoicePrefixHint": "Short text such as INV or FA (inserted wherever your pattern uses the prefix token).",
+  "profileInvoicePatternLabel": "Number format",
+  "profileInvoicePatternHint": "Use the tokens prefix, year, and count — each wrapped in curly braces. Underscores and order are up to you. The default pattern yields numbers like INV_2026_045. The count token is required.",
+  "profileInvoiceCountDigitsLabel": "Digits for sequence",
+  "profileInvoiceCountDigitsHint": "Minimum width for the yearly counter (e.g. 3 → 045).",
+  "profileInvoicePreview": "Preview",
+  "profileInvoicePatternInvalid": "The format must include the count token (in curly braces) so each invoice gets a unique yearly number.",
   "profileSectionActivity": "Activity category",
   "activityCommercialShort": "Commercial",
   "activityArtisanalShort": "Artisanal",

@@ -29,7 +29,8 @@ class Declaration {
   /// Snapshot of `config/taxRates` version used when this record was saved.
   final int? taxRatesVersion;
 
-  String get periodKey => '$year-Q$quarter';
+  /// Matches [declarationPeriodKey] / Firestore doc id convention.
+  String get periodKey => '$year-$quarter';
 
   Declaration copyWith({
     String? id,

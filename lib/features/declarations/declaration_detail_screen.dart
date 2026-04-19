@@ -149,18 +149,6 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
                   ),
                   error: (_, __) => Text(l10n.declLoadError),
                   data: (rates) {
-                    if (rates == null) {
-                      return Card(
-                        color: theme.colorScheme.errorContainer,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            l10n.declTaxConfigMissing,
-                            style: TextStyle(color: theme.colorScheme.onErrorContainer),
-                          ),
-                        ),
-                      );
-                    }
                     return revenueAsync.when(
                       loading: () => const Padding(
                         padding: EdgeInsets.all(48),
