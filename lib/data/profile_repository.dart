@@ -146,17 +146,29 @@ class ProfileRepository {
         pattern: invPattern,
         countDigits: invDigits.clamp(1, 12),
       ),
-      nextInvoiceNumber: () {
-        final s = data['nextInvoiceNumber'] as String?;
-        if (s == null) return null;
-        final t = s.trim();
-        return t.isEmpty ? null : t;
-      }(),
+      nextInvoiceCount: _nextInvoiceCountFromFirestore(data),
     );
   }
 
+  /// Reads [nextInvoiceCount] or migrates legacy [nextInvoiceNumber] string.
+  int? _nextInvoiceCountFromFirestore(Map<String, dynamic> data) {
+    final n = data['nextInvoiceCount'];
+    if (n is num) {
+      final v = n.toInt();
+      if (v >= 1) return v;
+    }
+    final legacy = data['nextInvoiceNumber'] as String?;
+    if (legacy != null && legacy.trim().isNotEmpty) {
+      final t = legacy.trim();
+      final parsed = parseTrailingInvoiceSequence(t);
+      if (parsed != null && parsed >= 1) return parsed;
+      final direct = int.tryParse(t);
+      if (direct != null && direct >= 1) return direct;
+    }
+    return null;
+  }
+
   Map<String, dynamic> _profileToMap(UserProfile p) {
-    final nextInv = p.nextInvoiceNumber?.trim();
     return {
       'businessName': p.name.trim(),
       'cin': p.cin.trim(),
@@ -180,9 +192,10 @@ class ProfileRepository {
           ? '{prefix}_{year}_{count}'
           : p.invoiceNumberConfig.pattern.trim(),
       'invoiceNumberCountDigits': p.invoiceNumberConfig.countDigits.clamp(1, 12),
-      'nextInvoiceNumber': (nextInv != null && nextInv.isNotEmpty)
-          ? nextInv
+      'nextInvoiceCount': (p.nextInvoiceCount != null && p.nextInvoiceCount! >= 1)
+          ? p.nextInvoiceCount
           : FieldValue.delete(),
+      'nextInvoiceNumber': FieldValue.delete(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

@@ -39,12 +39,23 @@ class InvoiceRepository {
     );
   }
 
-  String? _nextInvoiceNumberFromUserData(Map<String, dynamic>? data) {
+  /// Next `{count}` from profile, or legacy full-number string (trailing digits).
+  int? _nextInvoiceCountFromUserData(Map<String, dynamic>? data) {
     if (data == null) return null;
-    final s = data['nextInvoiceNumber'] as String?;
-    if (s == null) return null;
-    final t = s.trim();
-    return t.isEmpty ? null : t;
+    final n = data['nextInvoiceCount'];
+    if (n is num) {
+      final v = n.toInt();
+      if (v >= 1) return v;
+    }
+    final legacy = data['nextInvoiceNumber'] as String?;
+    if (legacy != null && legacy.trim().isNotEmpty) {
+      final t = legacy.trim();
+      final parsed = parseTrailingInvoiceSequence(t);
+      if (parsed != null && parsed >= 1) return parsed;
+      final direct = int.tryParse(t);
+      if (direct != null && direct >= 1) return direct;
+    }
+    return null;
   }
 
   /// Read-only preview of the next invoice number (does not increment the counter).
@@ -54,10 +65,9 @@ class InvoiceRepository {
     required DateTime issueDate,
   }) async {
     final userSnap = await _userDoc(uid).get();
-    final queued = _nextInvoiceNumberFromUserData(userSnap.data());
-    if (queued != null) return queued;
+    final userData = userSnap.data();
     final cfg = normalizeInvoiceNumberConfig(
-      _invoiceNumberConfigFromUserData(userSnap.data()),
+      _invoiceNumberConfigFromUserData(userData),
     );
     final cSnap = await _counterRef(uid).get();
     final counterData = cSnap.data() ?? {};
@@ -70,11 +80,15 @@ class InvoiceRepository {
       );
     }
     final lastForYear = (yearLast[yearKey] as num?)?.toInt() ?? 0;
-    final next = lastForYear + 1;
+    final profileCount = _nextInvoiceCountFromUserData(userData);
+    final counterNext = lastForYear + 1;
+    final count = profileCount != null
+        ? max(counterNext, profileCount)
+        : counterNext;
     return formatInvoiceNumber(
       cfg,
       year: issueDate.year,
-      count: next,
+      count: count,
     );
   }
 
@@ -163,8 +177,11 @@ class InvoiceRepository {
   /// Invoice number formatting is read from `users/{uid}` inside this transaction so it
   /// always matches persisted profile fields (not a possibly stale [getProfile] cache).
   ///
-  /// When [numberOverride] is null or empty, if `users/{uid}.nextInvoiceNumber` is set it is
-  /// used once as the invoice number, then removed from the user document (same transaction).
+  /// When [numberOverride] is null or empty, if `users/{uid}.nextInvoiceCount` is set it is
+  /// combined with the per-year counter as `max(last+1, nextInvoiceCount)` for the sequence
+  /// count in the formatted number. After every successful create, `nextInvoiceCount` on the
+  /// user document is set to one more than the last count stored for the invoice issue year
+  /// (same transaction). Legacy string `nextInvoiceNumber` is deleted when present.
   ///
   /// If [numberOverride] is non-empty after trim, it is stored as-is; trailing digits are
   /// used to bump the yearly counter so automatic numbering can continue after manual values.
@@ -222,30 +239,30 @@ class InvoiceRepository {
           yearLast[yearKey] = lastForYear;
         }
       } else {
-        final queuedNext = _nextInvoiceNumberFromUserData(userSnap.data());
-        if (queuedNext != null) {
-          numberStr = queuedNext;
-          final parsed = parseTrailingInvoiceSequence(queuedNext);
-          if (parsed != null) {
-            yearLast[yearKey] = max(lastForYear, parsed);
-          } else {
-            yearLast[yearKey] = lastForYear;
-          }
-          txn.set(
-            _userDoc(uid),
-            {'nextInvoiceNumber': FieldValue.delete()},
-            SetOptions(merge: true),
-          );
-        } else {
-          final next = lastForYear + 1;
-          yearLast[yearKey] = next;
-          numberStr = formatInvoiceNumber(
-            cfg,
-            year: issueDate.year,
-            count: next,
-          );
-        }
+        final userData = userSnap.data();
+        final profileCount = _nextInvoiceCountFromUserData(userData);
+        final counterNext = lastForYear + 1;
+        final int count = profileCount != null
+            ? max(counterNext, profileCount)
+            : counterNext;
+        yearLast[yearKey] = max(lastForYear, count);
+        numberStr = formatInvoiceNumber(
+          cfg,
+          year: issueDate.year,
+          count: count,
+        );
       }
+
+      final issuedLastForYear =
+          (yearLast[yearKey] as num?)?.toInt() ?? 0;
+      txn.set(
+        _userDoc(uid),
+        {
+          'nextInvoiceCount': issuedLastForYear + 1,
+          'nextInvoiceNumber': FieldValue.delete(),
+        },
+        SetOptions(merge: true),
+      );
 
       txn.set(
         _counterRef(uid),

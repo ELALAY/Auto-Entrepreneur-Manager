@@ -712,17 +712,23 @@ abstract class AppLocalizations {
   /// **'Minimum width for the yearly counter (e.g. 3 → 045).'**
   String get profileInvoiceCountDigitsHint;
 
-  /// No description provided for @profileNextInvoiceNumberLabel.
+  /// No description provided for @profileNextInvoiceCountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Next invoice number'**
-  String get profileNextInvoiceNumberLabel;
+  /// **'Next invoice sequence (count)'**
+  String get profileNextInvoiceCountLabel;
 
-  /// No description provided for @profileNextInvoiceNumberHint.
+  /// No description provided for @profileNextInvoiceCountHint.
   ///
   /// In en, this message translates to:
-  /// **'Optional. If set, the next new invoice defaults to this exact value; after that invoice is created it is cleared and the yearly counter is updated from trailing digits when possible. Leave empty to use only the automatic sequence.'**
-  String get profileNextInvoiceNumberHint;
+  /// **'Optional. Whole number used as the count segment for the next new invoice (e.g. 11 → INV_2026_011 with your pattern). It is combined with the stored counter so the sequence never goes backwards. After each new invoice is created, this value is set automatically to the next count. Leave empty to use only the automatic counter until the first invoice is saved.'**
+  String get profileNextInvoiceCountHint;
+
+  /// No description provided for @profileNextInvoiceCountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number ≥ 1, or leave the field empty.'**
+  String get profileNextInvoiceCountInvalid;
 
   /// No description provided for @profileInvoicePreview.
   ///

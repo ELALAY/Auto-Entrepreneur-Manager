@@ -357,11 +357,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Minimum width for the yearly counter (e.g. 3 → 045).';
 
   @override
-  String get profileNextInvoiceNumberLabel => 'Next invoice number';
+  String get profileNextInvoiceCountLabel => 'Next invoice sequence (count)';
 
   @override
-  String get profileNextInvoiceNumberHint =>
-      'Optional. If set, the next new invoice defaults to this exact value; after that invoice is created it is cleared and the yearly counter is updated from trailing digits when possible. Leave empty to use only the automatic sequence.';
+  String get profileNextInvoiceCountHint =>
+      'Optional. Whole number used as the count segment for the next new invoice (e.g. 11 → INV_2026_011 with your pattern). It is combined with the stored counter so the sequence never goes backwards. After each new invoice is created, this value is set automatically to the next count. Leave empty to use only the automatic counter until the first invoice is saved.';
+
+  @override
+  String get profileNextInvoiceCountInvalid =>
+      'Enter a whole number ≥ 1, or leave the field empty.';
 
   @override
   String get profileInvoicePreview => 'Preview';

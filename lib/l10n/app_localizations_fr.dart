@@ -361,11 +361,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Largeur minimale du compteur annuel (ex. 3 → 045).';
 
   @override
-  String get profileNextInvoiceNumberLabel => 'Prochain numéro de facture';
+  String get profileNextInvoiceCountLabel => 'Prochain compteur de facture';
 
   @override
-  String get profileNextInvoiceNumberHint =>
-      'Facultatif. S\'il est renseigné, la prochaine facture créée utilisera exactement cette valeur ; après création, le champ est effacé et le compteur annuel est mis à jour à partir des chiffres en fin de numéro lorsque c\'est possible. Laissez vide pour n\'utiliser que la séquence automatique.';
+  String get profileNextInvoiceCountHint =>
+      'Facultatif. Entier utilisé comme valeur du compteur pour la prochaine facture (ex. 11 → INV_2026_011 selon votre modèle). Il est combiné avec le compteur enregistré pour ne pas reculer la série. Après chaque nouvelle facture, cette valeur est mise à jour automatiquement vers le compteur suivant. Laissez vide pour n\'utiliser que le compteur automatique jusqu\'à la première facture enregistrée.';
+
+  @override
+  String get profileNextInvoiceCountInvalid =>
+      'Saisissez un entier ≥ 1, ou laissez le champ vide.';
 
   @override
   String get profileInvoicePreview => 'Aperçu';

@@ -35,8 +35,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _invoicePattern =
       TextEditingController(text: '{prefix}_{year}_{count}');
   final _invoiceCountDigits = TextEditingController(text: '3');
-  final _nextInvoiceNumber = TextEditingController();
-  final _nextInvoiceNumberFocus = FocusNode();
+  final _nextInvoiceCount = TextEditingController();
+  final _nextInvoiceCountFocus = FocusNode();
 
   late final SignatureController _signatureController;
   ActivityCategory _category = ActivityCategory.commercial;
@@ -74,8 +74,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _invoicePrefix.dispose();
     _invoicePattern.dispose();
     _invoiceCountDigits.dispose();
-    _nextInvoiceNumber.dispose();
-    _nextInvoiceNumberFocus.dispose();
+    _nextInvoiceCount.dispose();
+    _nextInvoiceCountFocus.dispose();
     _signatureController.dispose();
     super.dispose();
   }
@@ -100,7 +100,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _invoicePattern.text = p.invoiceNumberConfig.pattern;
     _invoiceCountDigits.text =
         p.invoiceNumberConfig.countDigits.clamp(1, 12).toString();
-    _nextInvoiceNumber.text = p.nextInvoiceNumber ?? '';
+    _nextInvoiceCount.text = p.nextInvoiceCount?.toString() ?? '';
   }
 
   void _syncBrandingUrlsFrom(UserProfile p) {
@@ -145,9 +145,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         pattern: _invoicePattern.text,
         countDigits: (int.tryParse(_invoiceCountDigits.text) ?? 3).clamp(1, 12),
       ),
-      nextInvoiceNumber: () {
-        final t = _nextInvoiceNumber.text.trim();
-        return t.isEmpty ? null : t;
+      nextInvoiceCount: () {
+        final t = _nextInvoiceCount.text.trim();
+        if (t.isEmpty) return null;
+        return int.tryParse(t);
       }(),
     );
   }
@@ -177,6 +178,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         SnackBar(content: Text(l10n.profileInvoicePatternInvalid)),
       );
       return;
+    }
+    final nextRaw = _nextInvoiceCount.text.trim();
+    if (nextRaw.isNotEmpty) {
+      final v = int.tryParse(nextRaw);
+      if (v == null || v < 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.profileNextInvoiceCountInvalid)),
+        );
+        return;
+      }
     }
     setState(() => _saving = true);
     try {
@@ -432,11 +443,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (!_sameBrandingSnapshot(p)) {
         setState(() => _syncBrandingUrlsFrom(p));
       }
-      if (!_nextInvoiceNumberFocus.hasFocus) {
-        final server = (p.nextInvoiceNumber ?? '').trim();
-        final local = _nextInvoiceNumber.text.trim();
-        if (server != local) {
-          setState(() => _nextInvoiceNumber.text = server);
+      if (!_nextInvoiceCountFocus.hasFocus) {
+        final server = p.nextInvoiceCount;
+        final localTrim = _nextInvoiceCount.text.trim();
+        final localParsed =
+            localTrim.isEmpty ? null : int.tryParse(localTrim);
+        if (server != localParsed) {
+          setState(() => _nextInvoiceCount.text = server?.toString() ?? '');
         }
       }
     });
@@ -620,11 +633,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const SizedBox(height: 12),
           TextFormField(
-            controller: _nextInvoiceNumber,
-            focusNode: _nextInvoiceNumberFocus,
+            controller: _nextInvoiceCount,
+            focusNode: _nextInvoiceCountFocus,
+            keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: l10n.profileNextInvoiceNumberLabel,
-              helperText: l10n.profileNextInvoiceNumberHint,
+              labelText: l10n.profileNextInvoiceCountLabel,
+              helperText: l10n.profileNextInvoiceCountHint,
               border: const OutlineInputBorder(),
             ),
           ),

@@ -20,7 +20,7 @@ class UserProfile {
     this.signatureUrl,
     this.branding = const BrandingConfig(),
     this.invoiceNumberConfig = const InvoiceNumberConfig(),
-    this.nextInvoiceNumber,
+    this.nextInvoiceCount,
   });
 
   final String uid;
@@ -42,9 +42,12 @@ class UserProfile {
   final BrandingConfig branding;
   final InvoiceNumberConfig invoiceNumberConfig;
 
-  /// When non-null and non-empty, the next automatic invoice uses this number
-  /// once, then the field is cleared (see [InvoiceRepository.createInvoice]).
-  final String? nextInvoiceNumber;
+  /// When non-null and ≥ 1, the next automatic invoice uses this value as the
+  /// sequence count in the formatted number (with [InvoiceNumberConfig]),
+  /// combined with the stored per-year counter via `max(counter+1, this)`.
+  /// [InvoiceRepository.createInvoice] updates this on the server after each
+  /// new invoice to `lastIssuedCount + 1` for the invoice issue year.
+  final int? nextInvoiceCount;
 
   UserProfile copyWith({
     String? uid,
@@ -62,9 +65,9 @@ class UserProfile {
     String? signatureUrl,
     BrandingConfig? branding,
     InvoiceNumberConfig? invoiceNumberConfig,
-    String? nextInvoiceNumber,
+    int? nextInvoiceCount,
     bool clearSignatureUrl = false,
-    bool clearNextInvoiceNumber = false,
+    bool clearNextInvoiceCount = false,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -84,9 +87,9 @@ class UserProfile {
       branding: branding ?? this.branding,
       invoiceNumberConfig:
           invoiceNumberConfig ?? this.invoiceNumberConfig,
-      nextInvoiceNumber: clearNextInvoiceNumber
+      nextInvoiceCount: clearNextInvoiceCount
           ? null
-          : (nextInvoiceNumber ?? this.nextInvoiceNumber),
+          : (nextInvoiceCount ?? this.nextInvoiceCount),
     );
   }
 }
