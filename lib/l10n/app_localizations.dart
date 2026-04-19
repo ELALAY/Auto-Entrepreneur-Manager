@@ -494,6 +494,18 @@ abstract class AppLocalizations {
   /// **'Address'**
   String get profileFieldAddress;
 
+  /// No description provided for @profileHasCnssLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Already covered by CNSS'**
+  String get profileHasCnssLabel;
+
+  /// No description provided for @profileHasCnssHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.'**
+  String get profileHasCnssHint;
+
   /// No description provided for @profileSectionActivity.
   ///
   /// In en, this message translates to:
@@ -553,6 +565,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Professional services (consulting, design, IT services, etc.). Uses the liberal-profession contribution schedule.'**
   String get activityLiberalBody;
+
+  /// No description provided for @activityServicesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get activityServicesShort;
+
+  /// No description provided for @activityServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service activities'**
+  String get activityServicesTitle;
+
+  /// No description provided for @activityServicesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Service providers (training, coaching, events, etc.). Benefits from a reduced 1% IR rate — confirm your eligibility with your tax office.'**
+  String get activityServicesBody;
 
   /// No description provided for @profileSectionBranding.
   ///
@@ -980,6 +1010,24 @@ abstract class AppLocalizations {
   /// **'Record payment'**
   String get invoiceAddPayment;
 
+  /// No description provided for @invoiceEditPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit payment'**
+  String get invoiceEditPayment;
+
+  /// No description provided for @invoiceDeletePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete payment'**
+  String get invoiceDeletePayment;
+
+  /// No description provided for @invoiceDeletePaymentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this payment of {amount}?'**
+  String invoiceDeletePaymentConfirm(String amount);
+
   /// No description provided for @invoicePaymentAmount.
   ///
   /// In en, this message translates to:
@@ -1112,6 +1160,12 @@ abstract class AppLocalizations {
   /// **'CNSS base (after minimum)'**
   String get declCnssBase;
 
+  /// No description provided for @declCnssExempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Exempt — you already contribute to CNSS through another scheme'**
+  String get declCnssExempt;
+
   /// No description provided for @declRatesVersion.
   ///
   /// In en, this message translates to:
@@ -1127,13 +1181,13 @@ abstract class AppLocalizations {
   /// No description provided for @declFilingGuideTitle.
   ///
   /// In en, this message translates to:
-  /// **'Filing on DAMANCOM (overview)'**
+  /// **'Filing on ae.gov.ma (overview)'**
   String get declFilingGuideTitle;
 
   /// No description provided for @declFilingStep1.
   ///
   /// In en, this message translates to:
-  /// **'Log in to the DAMANCOM portal with your auto-entrepreneur credentials.'**
+  /// **'Log in to the ae.gov.ma portal with your auto-entrepreneur credentials.'**
   String get declFilingStep1;
 
   /// No description provided for @declFilingStep2.

@@ -10,6 +10,7 @@ import '../../debug/agent_ndjson_log.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/enums.dart';
 import '../../models/invoice.dart';
+import '../../models/payment.dart';
 import '../../models/user_profile.dart';
 import '../../providers/invoice_providers.dart';
 import '../../providers/profile_providers.dart';
@@ -204,6 +205,8 @@ class InvoiceDetailScreen extends ConsumerWidget {
                             subtitle: Text(
                               '${MaterialLocalizations.of(context).formatMediumDate(p.date)} · ${_methodLabel(l10n, p.method)}',
                             ),
+                            trailing: const Icon(Icons.edit_outlined, size: 18),
+                            onTap: () => _showEditPayment(context, ref, inv, p),
                           ),
                         )
                         .toList(),
@@ -429,6 +432,160 @@ class InvoiceDetailScreen extends ConsumerWidget {
             uid: uid,
             invoiceId: inv.id,
             amount: amt,
+            date: date,
+            method: method,
+          );
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.invoiceSaveError)),
+        );
+      }
+    }
+  }
+
+  static Future<void> _showEditPayment(
+    BuildContext context,
+    WidgetRef ref,
+    Invoice inv,
+    Payment payment,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final amountCtrl = TextEditingController(text: payment.amount.toString());
+    var date = payment.date;
+    var method = payment.method;
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSt) => AlertDialog(
+          title: Text(l10n.invoiceEditPayment),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: amountCtrl,
+                  decoration: InputDecoration(
+                    labelText: l10n.invoicePaymentAmount,
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  title: Text(l10n.invoicePaymentDate),
+                  subtitle: Text(MaterialLocalizations.of(ctx).formatMediumDate(date)),
+                  onTap: () async {
+                    final d = await showDatePicker(
+                      context: ctx,
+                      initialDate: date,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    );
+                    if (d != null) setSt(() => date = d);
+                  },
+                ),
+                DropdownButtonFormField<PaymentMethod>(
+                  value: method,
+                  decoration: InputDecoration(
+                    labelText: l10n.invoicePaymentMethod,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: PaymentMethod.values
+                      .map((m) => DropdownMenuItem(
+                            value: m,
+                            child: Text(_methodLabel(l10n, m)),
+                          ))
+                      .toList(),
+                  onChanged: (m) {
+                    if (m != null) setSt(() => method = m);
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, 'delete'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(ctx).colorScheme.error),
+              child: Text(l10n.invoiceDeletePayment),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, null),
+              child: Text(l10n.actionCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, 'save'),
+              child: Text(l10n.actionSave),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final amountText = amountCtrl.text;
+    amountCtrl.dispose();
+
+    if (result == null || !context.mounted) return;
+
+    if (result == 'delete') {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.invoiceDeletePayment),
+          content: Text(l10n.invoiceDeletePaymentConfirm(_mad(payment.amount))),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.actionCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error,
+              ),
+              child: Text(l10n.actionDelete),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) return;
+      try {
+        await ref.read(invoiceRepositoryProvider).deletePayment(
+              uid: uid,
+              invoiceId: inv.id,
+              paymentId: payment.id,
+              amount: payment.amount,
+            );
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.invoiceSaveError)),
+          );
+        }
+      }
+      return;
+    }
+
+    // save
+    final newAmt = double.tryParse(amountText.replaceAll(',', '.'));
+    if (newAmt == null || newAmt <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.invoiceFormValidation)),
+      );
+      return;
+    }
+    try {
+      await ref.read(invoiceRepositoryProvider).updatePayment(
+            uid: uid,
+            invoiceId: inv.id,
+            paymentId: payment.id,
+            oldAmount: payment.amount,
+            newAmount: newAmt,
             date: date,
             method: method,
           );

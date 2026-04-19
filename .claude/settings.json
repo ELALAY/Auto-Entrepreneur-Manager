@@ -6,7 +6,25 @@
       "Bash(ls -la lib/l10n/*.arb)",
       "Bash(flutter gen-l10n:*)",
       "Bash(flutter analyze:*)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Read(//c/Users/elala/OneDrive/Bureau/Projects/Auto-Entrepreneur-Manager/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d\\)\")",
+      "Bash(firebase firestore:delete config/taxRates --project scorebuddy-5e069 -f)",
+      "Bash(node -e ':*)",
+      "Bash(firebase use:*)",
+      "Bash(firebase firestore:set --project scorebuddy-5e069 config/taxRates)",
+      "Bash(firebase --version)",
+      "Bash(firebase firestore:*)",
+      "Bash(firebase auth:print-access-token --project scorebuddy-5e069)",
+      "Bash(firebase login:ci)",
+      "Bash(gcloud auth:*)",
+      "Bash(npm --version)",
+      "Bash(npm list:*)",
+      "Read(//c/Users/elala/AppData/Roaming/npm/node_modules/**)",
+      "Read(//c/Users/elala/AppData/Roaming/configstore/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); tokens=d.get\\('tokens',{}\\); print\\(list\\(tokens.keys\\(\\)\\)[:3]\\)\")",
+      "Bash(xargs grep:*)",
+      "Bash(flutter build:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\elala\\OneDrive\\Bureau\\Projects\\Auto-Entrepreneur-Manager\\auto_entrepreneur_manager\\assets"

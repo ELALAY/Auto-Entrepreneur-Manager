@@ -175,6 +175,74 @@ class InvoiceRepository {
     });
   }
 
+  Future<void> deletePayment({
+    required String uid,
+    required String invoiceId,
+    required String paymentId,
+    required double amount,
+  }) async {
+    final payRef = _payments(uid, invoiceId).doc(paymentId);
+    await _firestore.runTransaction((txn) async {
+      final invRef = _invoices(uid).doc(invoiceId);
+      final invSnap = await txn.get(invRef);
+      if (!invSnap.exists) throw StateError('Invoice not found');
+      final data = invSnap.data()!;
+      final total = (data['total'] as num?)?.toDouble() ?? 0;
+      var paid = (data['paidTotal'] as num?)?.toDouble() ?? 0;
+      paid = (paid - amount).clamp(0, double.infinity);
+
+      txn.delete(payRef);
+
+      final updates = <String, dynamic>{
+        'paidTotal': paid,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      // Revert paid status if balance reappears
+      if (data['status'] == InvoiceStatus.paid.name && paid < total - 0.001) {
+        updates['status'] = InvoiceStatus.sent.name;
+      }
+      txn.update(invRef, updates);
+    });
+  }
+
+  Future<void> updatePayment({
+    required String uid,
+    required String invoiceId,
+    required String paymentId,
+    required double oldAmount,
+    required double newAmount,
+    required DateTime date,
+    required PaymentMethod method,
+  }) async {
+    final payRef = _payments(uid, invoiceId).doc(paymentId);
+    await _firestore.runTransaction((txn) async {
+      final invRef = _invoices(uid).doc(invoiceId);
+      final invSnap = await txn.get(invRef);
+      if (!invSnap.exists) throw StateError('Invoice not found');
+      final data = invSnap.data()!;
+      final total = (data['total'] as num?)?.toDouble() ?? 0;
+      var paid = (data['paidTotal'] as num?)?.toDouble() ?? 0;
+      paid = (paid - oldAmount + newAmount).clamp(0, double.infinity);
+
+      txn.update(payRef, {
+        'amount': newAmount,
+        'date': Timestamp.fromDate(date),
+        'method': method.name,
+      });
+
+      final updates = <String, dynamic>{
+        'paidTotal': paid,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      if (paid >= total - 0.001) {
+        updates['status'] = InvoiceStatus.paid.name;
+      } else if (data['status'] == InvoiceStatus.paid.name) {
+        updates['status'] = InvoiceStatus.sent.name;
+      }
+      txn.update(invRef, updates);
+    });
+  }
+
   InvoiceSummary _summaryFromDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     final ts = data['issueDate'];

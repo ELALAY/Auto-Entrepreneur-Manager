@@ -216,6 +216,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileFieldAddress => 'Address';
 
   @override
+  String get profileHasCnssLabel => 'Already covered by CNSS';
+
+  @override
+  String get profileHasCnssHint =>
+      'Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.';
+
+  @override
   String get profileSectionActivity => 'Activity category';
 
   @override
@@ -247,6 +254,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get activityLiberalBody =>
       'Professional services (consulting, design, IT services, etc.). Uses the liberal-profession contribution schedule.';
+
+  @override
+  String get activityServicesShort => 'Services';
+
+  @override
+  String get activityServicesTitle => 'Service activities';
+
+  @override
+  String get activityServicesBody =>
+      'Service providers (training, coaching, events, etc.). Benefits from a reduced 1% IR rate — confirm your eligibility with your tax office.';
 
   @override
   String get profileSectionBranding => 'Invoice branding';
@@ -472,6 +489,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invoiceAddPayment => 'Record payment';
 
   @override
+  String get invoiceEditPayment => 'Edit payment';
+
+  @override
+  String get invoiceDeletePayment => 'Delete payment';
+
+  @override
+  String invoiceDeletePaymentConfirm(String amount) {
+    return 'Delete this payment of $amount?';
+  }
+
+  @override
   String get invoicePaymentAmount => 'Amount (MAD)';
 
   @override
@@ -541,6 +569,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get declCnssBase => 'CNSS base (after minimum)';
 
   @override
+  String get declCnssExempt =>
+      'Exempt — you already contribute to CNSS through another scheme';
+
+  @override
   String declRatesVersion(int version) {
     return 'Rate table version: $version';
   }
@@ -550,11 +582,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'These amounts are estimates based on the rate table in the app. Laws and CNSS rules change — confirm every figure with DGI and CNSS before paying.';
 
   @override
-  String get declFilingGuideTitle => 'Filing on DAMANCOM (overview)';
+  String get declFilingGuideTitle => 'Filing on ae.gov.ma (overview)';
 
   @override
   String get declFilingStep1 =>
-      'Log in to the DAMANCOM portal with your auto-entrepreneur credentials.';
+      'Log in to the ae.gov.ma portal with your auto-entrepreneur credentials.';
 
   @override
   String get declFilingStep2 =>

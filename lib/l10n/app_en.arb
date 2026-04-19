@@ -67,6 +67,8 @@
   "profileFieldTaxProfessionnelle": "Professional tax number (TP)",
   "profileFieldPhone": "Phone",
   "profileFieldAddress": "Address",
+  "profileHasCnssLabel": "Already covered by CNSS",
+  "profileHasCnssHint": "Enable if you pay CNSS through another scheme (e.g. salaried employment). Your AE declaration will then show 0 MAD for CNSS.",
   "profileSectionActivity": "Activity category",
   "activityCommercialShort": "Commercial",
   "activityArtisanalShort": "Artisanal",
@@ -77,6 +79,9 @@
   "activityArtisanalBody": "Craft production and related services (e.g. workshops, manual trades). Rates are specific to artisanal auto-entrepreneurs.",
   "activityLiberalTitle": "Liberal professions",
   "activityLiberalBody": "Professional services (consulting, design, IT services, etc.). Uses the liberal-profession contribution schedule.",
+  "activityServicesShort": "Services",
+  "activityServicesTitle": "Service activities",
+  "activityServicesBody": "Service providers (training, coaching, events, etc.). Benefits from a reduced 1% IR rate — confirm your eligibility with your tax office.",
   "profileSectionBranding": "Invoice branding",
   "profilePickLogo": "Upload logo",
   "profileRemoveLogo": "Remove logo",
@@ -148,6 +153,14 @@
   "invoicePaymentsSection": "Payments",
   "invoiceNoPayments": "No payments recorded yet.",
   "invoiceAddPayment": "Record payment",
+  "invoiceEditPayment": "Edit payment",
+  "invoiceDeletePayment": "Delete payment",
+  "invoiceDeletePaymentConfirm": "Delete this payment of {amount}?",
+  "@invoiceDeletePaymentConfirm": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
   "invoicePaymentAmount": "Amount (MAD)",
   "invoicePaymentDate": "Payment date",
   "invoicePaymentMethod": "Method",
@@ -170,6 +183,7 @@
   "declIrDue": "Income tax (IR) due",
   "declCnssDue": "CNSS contribution due",
   "declCnssBase": "CNSS base (after minimum)",
+  "declCnssExempt": "Exempt — you already contribute to CNSS through another scheme",
   "declRatesVersion": "Rate table version: {version}",
   "@declRatesVersion": {
     "placeholders": {
@@ -177,8 +191,8 @@
     }
   },
   "declDisclaimer": "These amounts are estimates based on the rate table in the app. Laws and CNSS rules change — confirm every figure with DGI and CNSS before paying.",
-  "declFilingGuideTitle": "Filing on DAMANCOM (overview)",
-  "declFilingStep1": "Log in to the DAMANCOM portal with your auto-entrepreneur credentials.",
+  "declFilingGuideTitle": "Filing on ae.gov.ma (overview)",
+  "declFilingStep1": "Log in to the ae.gov.ma portal with your auto-entrepreneur credentials.",
   "declFilingStep2": "Open the quarterly declaration (déclaration trimestrielle) for the correct period.",
   "declFilingStep3": "Enter the revenue and contribution amounts consistent with your records and official tables.",
   "declFilingStep4": "Validate, pay or schedule payment as required, and keep the receipt.",

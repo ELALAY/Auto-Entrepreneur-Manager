@@ -91,7 +91,7 @@
 
 ### Tax Declarations (deferred)
 
-- **DECL-V2-01**: Step-by-step DAMANCOM portal filing guide walks user through each screen
+- **DECL-V2-01**: Step-by-step ae.gov.ma portal filing guide walks user through each screen
 - **DECL-V2-02**: In-app push notification reminder before quarterly deadline
 
 ### Service Catalog (deferred)
@@ -111,7 +111,7 @@
 |---------|--------|
 | Arabic / RTL interface | Significant Flutter RTL complexity; French covers professional target audience |
 | In-app subscription payments | Free for v1; validate product before monetizing |
-| Direct DAMANCOM portal API submission | No official Moroccan government API exists |
+| Direct ae.gov.ma portal API submission | No official Moroccan government API exists |
 | TVA (VAT) fields anywhere in the app | Auto-entrepreneurs are legally TVA-exempt — do not surface TVA |
 | Multi-user / accountant access | Auto-entrepreneurs are sole traders by legal definition |
 | Bank import / reconciliation | No Moroccan bank API equivalent; high complexity, low payoff |

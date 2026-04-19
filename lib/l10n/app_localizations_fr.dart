@@ -220,6 +220,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get profileFieldAddress => 'Adresse';
 
   @override
+  String get profileHasCnssLabel => 'Déjà couvert par la CNSS';
+
+  @override
+  String get profileHasCnssHint =>
+      'Activez si vous cotisez à la CNSS par un autre régime (ex. salarié). Votre déclaration AE affichera alors 0 MAD pour la CNSS.';
+
+  @override
   String get profileSectionActivity => 'Catégorie d\'activité';
 
   @override
@@ -251,6 +258,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get activityLiberalBody =>
       'Prestations intellectuelles (conseil, design, informatique, etc.). Barème des professions libérales.';
+
+  @override
+  String get activityServicesShort => 'Services';
+
+  @override
+  String get activityServicesTitle => 'Activités de services';
+
+  @override
+  String get activityServicesBody =>
+      'Prestataires de services (formation, coaching, événements, etc.). Bénéficie d\'un taux IR réduit de 1% — vérifiez votre éligibilité auprès de votre centre des impôts.';
 
   @override
   String get profileSectionBranding => 'Image de facture';
@@ -477,6 +494,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invoiceAddPayment => 'Enregistrer un paiement';
 
   @override
+  String get invoiceEditPayment => 'Modifier le paiement';
+
+  @override
+  String get invoiceDeletePayment => 'Supprimer le paiement';
+
+  @override
+  String invoiceDeletePaymentConfirm(String amount) {
+    return 'Supprimer ce paiement de $amount ?';
+  }
+
+  @override
   String get invoicePaymentAmount => 'Montant (MAD)';
 
   @override
@@ -547,6 +575,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get declCnssBase => 'Assiette CNSS (après plancher)';
 
   @override
+  String get declCnssExempt =>
+      'Exempté — vous cotisez déjà à la CNSS par un autre régime';
+
+  @override
   String declRatesVersion(int version) {
     return 'Version du barème : $version';
   }
@@ -556,11 +588,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ces montants sont des estimations selon le barème chargé dans l\'application. La loi et les circulaires CNSS évoluent — vérifiez chaque montant auprès de la DGI et de la CNSS avant paiement.';
 
   @override
-  String get declFilingGuideTitle => 'Déclaration sur DAMANCOM (aperçu)';
+  String get declFilingGuideTitle => 'Déclaration sur ae.gov.ma (aperçu)';
 
   @override
   String get declFilingStep1 =>
-      'Connectez-vous au portail DAMANCOM avec vos identifiants auto-entrepreneur.';
+      'Connectez-vous au portail ae.gov.ma avec vos identifiants auto-entrepreneur.';
 
   @override
   String get declFilingStep2 =>

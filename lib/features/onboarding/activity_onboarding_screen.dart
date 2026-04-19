@@ -59,6 +59,10 @@ class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScr
                   value: ActivityCategory.liberal,
                   label: Text(l10n.activityLiberalShort),
                 ),
+                ButtonSegment(
+                  value: ActivityCategory.services,
+                  label: Text(l10n.activityServicesShort),
+                ),
               ],
               selected: {_selected},
               onSelectionChanged: (s) {
@@ -134,6 +138,10 @@ class _ActivityExplainer extends StatelessWidget {
       ActivityCategory.liberal => (
           l10n.activityLiberalTitle,
           l10n.activityLiberalBody,
+        ),
+      ActivityCategory.services => (
+          l10n.activityServicesTitle,
+          l10n.activityServicesBody,
         ),
     };
     return Column(

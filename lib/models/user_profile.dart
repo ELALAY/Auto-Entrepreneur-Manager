@@ -13,6 +13,7 @@ class UserProfile {
     required this.phone,
     required this.activityCategory,
     required this.address,
+    this.hasCnss = false,
     this.logoUrl,
     this.signatureUrl,
     this.branding = const BrandingConfig(),
@@ -28,6 +29,10 @@ class UserProfile {
   final String phone;
   final ActivityCategory activityCategory;
   final String address;
+
+  /// True when the user already contributes to CNSS through another scheme
+  /// (e.g. salaried employment). CNSS is then excluded from AE declarations.
+  final bool hasCnss;
   final String? logoUrl;
   final String? signatureUrl;
   final BrandingConfig branding;
@@ -43,6 +48,7 @@ class UserProfile {
     String? phone,
     ActivityCategory? activityCategory,
     String? address,
+    bool? hasCnss,
     String? logoUrl,
     String? signatureUrl,
     BrandingConfig? branding,
@@ -60,6 +66,7 @@ class UserProfile {
       phone: phone ?? this.phone,
       activityCategory: activityCategory ?? this.activityCategory,
       address: address ?? this.address,
+      hasCnss: hasCnss ?? this.hasCnss,
       logoUrl: clearLogoUrl ? null : (logoUrl ?? this.logoUrl),
       signatureUrl:
           clearSignatureUrl ? null : (signatureUrl ?? this.signatureUrl),

@@ -32,6 +32,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   late final SignatureController _signatureController;
   ActivityCategory _category = ActivityCategory.commercial;
+  bool _hasCnss = false;
   Color? _accentColor;
   String _templateId = 'default';
   bool _syncedFromRemote = false;
@@ -78,6 +79,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _phone.text = p.phone;
     _address.text = p.address;
     _category = p.activityCategory;
+    _hasCnss = p.hasCnss;
     _logoUrl = p.logoUrl;
     _signatureUrl = p.signatureUrl;
     _templateId = p.branding.templateId ?? 'default';
@@ -96,6 +98,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       taxProfessionnelle: _taxProfessionnelle.text,
       phone: _phone.text,
       activityCategory: _category,
+      hasCnss: _hasCnss,
       address: _address.text,
       logoUrl: _logoUrl,
       signatureUrl: _signatureUrl,
@@ -306,17 +309,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    ref.listen(userProfileStreamProvider, (prev, next) {
-      next.whenData((p) {
-        if (_syncedFromRemote) return;
+    final profileAsync = ref.watch(userProfileStreamProvider);
+    if (!_syncedFromRemote) {
+      profileAsync.whenData((p) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          setState(() => _applyRemote(p));
+          if (mounted && !_syncedFromRemote) setState(() => _applyRemote(p));
         });
       });
-    });
-
-    ref.watch(userProfileStreamProvider);
+    }
     final complete = ref.watch(profileCompleteProvider).valueOrNull ?? false;
 
     return Scaffold(
@@ -439,6 +439,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 value: ActivityCategory.liberal,
                 label: Text(l10n.activityLiberalShort),
               ),
+              ButtonSegment(
+                value: ActivityCategory.services,
+                label: Text(l10n.activityServicesShort),
+              ),
             ],
             selected: {_category},
             onSelectionChanged: (s) {
@@ -447,6 +451,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const SizedBox(height: 8),
           _ActivityExplainer(category: _category),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.profileHasCnssLabel),
+            subtitle: Text(l10n.profileHasCnssHint),
+            value: _hasCnss,
+            onChanged: (v) => setState(() => _hasCnss = v),
+          ),
           const SizedBox(height: 24),
           Text(l10n.profileSectionBranding, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
@@ -595,6 +607,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       imageUrl: _signatureUrl!,
                       height: 64,
                       fit: BoxFit.contain,
+                      errorWidget: (_, __, ___) => const Icon(
+                        Icons.broken_image_outlined,
+                        size: 48,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -662,6 +678,10 @@ class _ActivityExplainer extends StatelessWidget {
       ActivityCategory.liberal => (
         l10n.activityLiberalTitle,
         l10n.activityLiberalBody,
+      ),
+      ActivityCategory.services => (
+        l10n.activityServicesTitle,
+        l10n.activityServicesBody,
       ),
     };
     return ExpansionTile(

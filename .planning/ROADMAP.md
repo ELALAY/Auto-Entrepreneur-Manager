@@ -128,7 +128,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
 1. During onboarding, user selects their activity category (commercial, artisanal, or liberal) with a plain-language explanation of each — the selection is saved to their profile
 2. For any completed quarter, the app calculates and displays the IR amount due and the CNSS contribution (including the minimum quarterly base) using rates loaded from a Firestore config document — not hardcoded values — with a disclaimer to verify with DGI/CNSS
-3. User can create a quarterly declaration record that links to the calculated amounts and view a step-by-step guide for filing on the DAMANCOM portal
+3. User can create a quarterly declaration record that links to the calculated amounts and view a step-by-step guide for filing on the ae.gov.ma portal
 4. User can mark a declaration as filed (recording the date) and view the full history of past declarations with amounts and status
 
 **Plans**: TBD

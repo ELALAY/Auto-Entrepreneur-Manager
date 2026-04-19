@@ -218,22 +218,8 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
     final clientsAsync = ref.watch(clientsStreamProvider);
 
     if (_isEdit) {
-      ref.listen(invoiceStreamProvider(widget.invoiceId!), (prev, next) {
-        next.whenData((inv) {
-          if (_synced) return;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
-            setState(() => _applyInvoice(inv));
-          });
-        });
-      });
-    }
-
-    final invAsync =
-        _isEdit ? ref.watch(invoiceStreamProvider(widget.invoiceId!)) : null;
-
-    if (_isEdit) {
-      return invAsync!.when(
+      final invAsync = ref.watch(invoiceStreamProvider(widget.invoiceId!));
+      return invAsync.when(
         loading: () => Scaffold(
           appBar: AppBar(title: Text(l10n.invoiceFormEditTitle)),
           body: const Center(child: CircularProgressIndicator()),
@@ -244,6 +230,11 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
         ),
         data: (inv) {
           if (!_synced) {
+            if (inv != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _applyInvoice(inv);
+              });
+            }
             return Scaffold(
               appBar: AppBar(title: Text(l10n.invoiceFormEditTitle)),
               body: const Center(child: CircularProgressIndicator()),

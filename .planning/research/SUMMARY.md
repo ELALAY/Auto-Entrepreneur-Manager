@@ -56,7 +56,7 @@ The Moroccan auto-entrepreneur regime defines a tight feature set. Users need in
 **Should have (Morocco-specific differentiators — core moat):**
 - Quarterly IR calculation by activity type (Commercial 1%, Artisanal 1%, Liberal 2% of gross revenue — VERIFY before implementing)
 - CNSS contribution calculation per quarter including minimum base (plancher — VERIFY rate)
-- Step-by-step DAMANCOM portal filing guide — removes the highest-friction pain point
+- Step-by-step ae.gov.ma portal filing guide — removes the highest-friction pain point
 - Quarterly declaration deadline reminders
 - Declaration history with filed amounts (audit trail)
 - Revenue ceiling proximity alert — AE status revoked above ceiling (VERIFY per activity type)
@@ -74,7 +74,7 @@ The Moroccan auto-entrepreneur regime defines a tight feature set. Users need in
 **Hard anti-features (never build):**
 - TVA/VAT fields anywhere — auto-entrepreneurs are legally TVA-exempt
 - Multi-user / team / accountant access — AEs are sole traders by law
-- Direct DAMANCOM API submission — no official government API exists
+- Direct ae.gov.ma API submission — no official government API exists
 
 See `.planning/research/FEATURES.md` for full dependency graph and Morocco tax reference.
 
@@ -134,7 +134,7 @@ Based on the dependency graph in FEATURES.md and the build order in ARCHITECTURE
 
 ### Phase 4: Tax Declarations
 **Rationale:** Depends on invoice revenue totals being queryable by period. This is the core Morocco-specific differentiator and the phase with the highest domain accuracy risk. Rates must be sourced from official documentation before a line of calculation code is written.
-**Delivers:** Quarterly IR + CNSS calculation by activity type, DAMANCOM filing guide, declaration history, deadline reminders, revenue ceiling alert
+**Delivers:** Quarterly IR + CNSS calculation by activity type, ae.gov.ma filing guide, declaration history, deadline reminders, revenue ceiling alert
 **Addresses:** All Morocco-specific differentiators (core moat)
 **Avoids:** C3 (wrong/hardcoded tax rates), m2 (timezone bugs — use period strings not timestamps)
 
@@ -212,7 +212,7 @@ Phases with well-documented patterns (research-phase likely unnecessary):
 - Morocco IR flat rates: 1% (Commercial/Artisanal), 2% (Liberal) — training knowledge, must verify against current Finance Law
 - CNSS contribution rate ~6.37% — training knowledge, must verify at cnss.ma
 - Revenue ceilings: MAD 500,000 (Commercial/Artisanal), MAD 200,000 (Liberal) — training knowledge, verify at DGI
-- DAMANCOM portal as official AE filing portal — verify still current at damancom.ma
+- ae.gov.ma portal as official AE filing portal — verify still current at ae.gov.ma
 
 ---
 *Research completed: 2026-04-09*

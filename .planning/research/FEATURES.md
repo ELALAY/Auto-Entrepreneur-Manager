@@ -34,7 +34,7 @@ Features users expect as baseline. Their absence makes the product feel unfinish
 |---------|-------------------|------------|-------|
 | Quarterly IR calculation by activity type | Commercial 1%, Artisanal 1%, Liberal 2% of gross revenue | Med | **VERIFY rates with current DGI documentation before implementing** |
 | CNSS contribution calculation per quarter | Separate social contribution on declared revenue | Med | **VERIFY rate and plancher with current CNSS schedule** |
-| Quarter-close step-by-step filing guide | Walk user through exact DAMANCOM portal steps | Med | Removes the biggest pain point for non-technical users |
+| Quarter-close step-by-step filing guide | Walk user through exact ae.gov.ma portal steps | Med | Removes the biggest pain point for non-technical users |
 | Declaration deadline reminders per quarter | In-app alert before filing deadline | Low | **Verify exact deadline date with DGI calendar** |
 | Activity type explainer (commercial/artisanal/liberal) | Many AEs unsure which category they belong to | Low | Common onboarding pain; no mainstream tool addresses this |
 | Declaration history with filed amounts | Track what was declared and paid per quarter | Low | Builds audit trail; peace of mind |
@@ -59,7 +59,7 @@ Features users expect as baseline. Their absence makes the product feel unfinish
 |--------------|-----------|
 | Automated bank import / reconciliation | No Plaid equivalent for Moroccan banks; high complexity |
 | Multi-user / team / accountant access | Auto-entrepreneurs are sole traders by legal definition |
-| Direct portal submission (DAMANCOM API) | No official Moroccan government API exists |
+| Direct portal submission (ae.gov.ma API) | No official Moroccan government API exists |
 | **TVA (VAT) accounting** | **Auto-entrepreneurs in Morocco are TVA-exempt — do NOT surface TVA fields anywhere** |
 | Recurring invoices / subscriptions | Complex state machine; defer to v2 |
 | Double-entry bookkeeping / journal | Far beyond auto-entrepreneur needs |
@@ -128,7 +128,7 @@ Expense logging + receipt capture, service catalog, email send from app, revenue
 | Revenue ceiling — Commercial | MAD 500,000/year (verify) | DGI |
 | Revenue ceiling — Artisanal | MAD 500,000/year (verify) | DGI |
 | Revenue ceiling — Liberal | MAD 200,000/year (verify) | DGI |
-| Filing portal | DAMANCOM (portail auto-entrepreneur) | damancom.ma |
+| Filing portal | ae.gov.ma (portail auto-entrepreneur) | ae.gov.ma |
 | TVA status | **Exempt — do not display any TVA fields** | DGI |
 | Required invoice fields | Name, address, ICE, IF, CNSS, date, sequential number, client details, line items | DGI |
 

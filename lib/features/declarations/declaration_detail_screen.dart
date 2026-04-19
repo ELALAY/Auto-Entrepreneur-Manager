@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/firebase_providers.dart';
 import '../../domain/tax/activity_category.dart';
@@ -167,12 +168,14 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
                       ),
                       error: (_, __) => Text(l10n.declLoadError),
                       data: (revenue) {
-                        final category = profileAsync.valueOrNull?.activityCategory ??
+                        final profile = profileAsync.valueOrNull;
+                        final category = profile?.activityCategory ??
                             ActivityCategory.commercial;
                         final computation = computeQuarterlyTax(
                           totalRevenue: revenue,
                           category: category,
                           rates: rates,
+                          hasCnss: profile?.hasCnss ?? false,
                         );
                         return savedAsync.when(
                           loading: () => const Padding(
@@ -247,8 +250,7 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
           context,
           l10n.declCnssDue,
           _formatMad(context, computation.cnssAmount),
-          subtitle:
-              '${l10n.declCnssBase}: ${_formatMad(context, computation.cnssTaxableBase)}',
+          subtitle: computation.cnssExempt ? l10n.declCnssExempt : null,
         ),
         const SizedBox(height: 8),
         Text(
@@ -277,7 +279,36 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('1. ${l10n.declFilingStep1}'),
+                  InkWell(
+                    onTap: () => launchUrl(
+                      Uri.parse('https://ae.gov.ma'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '1. ${l10n.declFilingStep1}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Icon(
+                            Icons.open_in_new,
+                            size: 14,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Text('2. ${l10n.declFilingStep2}'),
                   const SizedBox(height: 8),

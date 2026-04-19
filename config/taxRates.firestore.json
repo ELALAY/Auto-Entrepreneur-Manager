@@ -1,9 +1,15 @@
 {
-  "version": 1,
+  "version": 3,
   "effectiveFrom": "2026-01-01",
   "irRateCommercial": 0.005,
   "irRateArtisanal": 0.005,
-  "irRateLiberal": 0.02,
-  "cnssRate": 0.0226,
-  "cnssMinimumQuarterlyBaseMad": 30000
+  "irRateLiberal": 0.005,
+  "irRateServices": 0.01,
+  "cnssNil": 300,
+  "cnssTo2500": 570,
+  "cnssTo5000": 720,
+  "cnssTo10000": 1050,
+  "cnssTo25000": 1500,
+  "cnssTo50000": 2250,
+  "cnssAbove50000": 3600
 }

@@ -4,4 +4,5 @@ enum ActivityCategory {
   commercial,
   artisanal,
   liberal,
+  services,
 }
