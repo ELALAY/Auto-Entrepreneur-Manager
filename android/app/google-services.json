@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "438372412254",
+    "project_id": "scorebuddy-5e069",
+    "storage_bucket": "scorebuddy-5e069.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438372412254:android:3a48a82aa43ca4d2923dcf",
+        "android_client_info": {
+          "package_name": "com.example.auto_entrepreneur_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "438372412254-cj3m4dc3004bk86o6hqqe6318bbs5vgn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.auto_entrepreneur_manager",
+            "certificate_hash": "744a0dfc855a431a555902c801b5622cb8d1ab4c"
+          }
+        },
+        {
+          "client_id": "438372412254-qpd2965racrqv92oqjv8h9ahbse8bkcp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0jbSfmYwgBzqgk_Fv6VAP0EQfbc4bC3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "438372412254-qpd2965racrqv92oqjv8h9ahbse8bkcp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "438372412254-8margu3tgsrnupcckfmps8misar4n53h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.autoEntrepreneurManager"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

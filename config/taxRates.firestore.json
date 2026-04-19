@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "effectiveFrom": "2026-01-01",
+  "irRateCommercial": 0.005,
+  "irRateArtisanal": 0.005,
+  "irRateLiberal": 0.02,
+  "cnssRate": 0.0226,
+  "cnssMinimumQuarterlyBaseMad": 30000
+}
