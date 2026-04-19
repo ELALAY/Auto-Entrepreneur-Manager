@@ -1,3 +1,4 @@
+export 'brand_logo.dart';
 export 'branding_config.dart';
 export 'client.dart';
 export 'declaration.dart';

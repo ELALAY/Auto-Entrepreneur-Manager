@@ -9,6 +9,7 @@ import 'package:signature/signature.dart';
 import '../../data/firebase_providers.dart';
 import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/brand_logo.dart';
 import '../../models/branding_config.dart';
 import '../../models/invoice_number_config.dart';
 import '../../models/user_profile.dart';
@@ -34,15 +35,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _invoicePattern =
       TextEditingController(text: '{prefix}_{year}_{count}');
   final _invoiceCountDigits = TextEditingController(text: '3');
+  final _nextInvoiceNumber = TextEditingController();
+  final _nextInvoiceNumberFocus = FocusNode();
 
   late final SignatureController _signatureController;
   ActivityCategory _category = ActivityCategory.commercial;
   bool _hasCnss = false;
   Color? _accentColor;
   String _templateId = 'default';
-  bool _syncedFromRemote = false;
+  /// Text fields and activity/branding choices are filled once from Firestore;
+  /// [brandLogos] and [signatureUrl] stay in sync on every profile snapshot so a
+  /// delayed initial sync cannot wipe a signature that was just uploaded.
+  bool _profileHydrated = false;
   bool _saving = false;
-  String? _logoUrl;
+  List<BrandLogo> _brandLogos = [];
   String? _signatureUrl;
 
   @override
@@ -68,16 +74,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _invoicePrefix.dispose();
     _invoicePattern.dispose();
     _invoiceCountDigits.dispose();
+    _nextInvoiceNumber.dispose();
+    _nextInvoiceNumberFocus.dispose();
     _signatureController.dispose();
     super.dispose();
   }
 
-  void _applyRemote(UserProfile? p) {
-    if (_syncedFromRemote) return;
-    _syncedFromRemote = true;
-    if (p == null) {
-      return;
-    }
+  void _hydrateFromProfile(UserProfile p) {
     _businessName.text = p.name;
     _cin.text = p.cin;
     _ice.text = p.ice;
@@ -88,7 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _address.text = p.address;
     _category = p.activityCategory;
     _hasCnss = p.hasCnss;
-    _logoUrl = p.logoUrl;
+    _brandLogos = List<BrandLogo>.from(p.brandLogos);
     _signatureUrl = p.signatureUrl;
     _templateId = p.branding.templateId ?? 'default';
     final argb = p.branding.accentColorArgb;
@@ -97,6 +100,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _invoicePattern.text = p.invoiceNumberConfig.pattern;
     _invoiceCountDigits.text =
         p.invoiceNumberConfig.countDigits.clamp(1, 12).toString();
+    _nextInvoiceNumber.text = p.nextInvoiceNumber ?? '';
+  }
+
+  void _syncBrandingUrlsFrom(UserProfile p) {
+    _brandLogos = List<BrandLogo>.from(p.brandLogos);
+    _signatureUrl = p.signatureUrl;
+  }
+
+  bool _sameBrandingSnapshot(UserProfile p) {
+    if (_signatureUrl != p.signatureUrl) return false;
+    if (_brandLogos.length != p.brandLogos.length) return false;
+    for (var i = 0; i < _brandLogos.length; i++) {
+      if (_brandLogos[i].id != p.brandLogos[i].id ||
+          _brandLogos[i].url != p.brandLogos[i].url) {
+        return false;
+      }
+    }
+    return true;
   }
 
   UserProfile _buildProfile(String uid) {
@@ -112,7 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       activityCategory: _category,
       hasCnss: _hasCnss,
       address: _address.text,
-      logoUrl: _logoUrl,
+      brandLogos: _brandLogos,
       signatureUrl: _signatureUrl,
       branding: BrandingConfig(
         // ignore: deprecated_member_use
@@ -124,6 +145,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         pattern: _invoicePattern.text,
         countDigits: (int.tryParse(_invoiceCountDigits.text) ?? 3).clamp(1, 12),
       ),
+      nextInvoiceNumber: () {
+        final t = _nextInvoiceNumber.text.trim();
+        return t.isEmpty ? null : t;
+      }(),
     );
   }
 
@@ -174,23 +199,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<String?> _askOptionalBrandLogoLabel() async {
+    final l10n = AppLocalizations.of(context)!;
+    final c = TextEditingController();
+    final result = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.profileLogoNameDialogTitle),
+        content: TextField(
+          controller: c,
+          decoration: InputDecoration(
+            hintText: l10n.profileLogoOptionalNameHint,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop<String?>(ctx, null),
+            child: Text(l10n.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop<String?>(ctx, c.text.trim()),
+            child: Text(l10n.profileLogoNameDialogSave),
+          ),
+        ],
+      ),
+    );
+    return result;
+  }
+
   Future<void> _pickLogo() async {
     final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     final pick = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pick == null) return;
+    final labelRaw = await _askOptionalBrandLogoLabel();
+    if (!mounted) return;
+    if (labelRaw == null) return;
     final bytes = await pick.readAsBytes();
     final mime = pick.name.toLowerCase().endsWith('.png')
         ? 'image/png'
         : 'image/jpeg';
     setState(() => _saving = true);
     try {
-      final url = await ref
-          .read(profileRepositoryProvider)
-          .uploadLogo(uid, bytes, mime);
+      final logo = await ref.read(profileRepositoryProvider).uploadBrandLogo(
+            uid,
+            bytes,
+            mime,
+            label: labelRaw.isEmpty ? null : labelRaw,
+          );
       setState(() {
-        _logoUrl = url;
+        _brandLogos = [..._brandLogos, logo];
       });
       await ref.read(profileRepositoryProvider).saveProfile(_buildProfile(uid));
       if (mounted) {
@@ -212,13 +272,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  Future<void> _removeLogo() async {
+  Future<void> _removeBrandLogoAt(int index) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
+    final logo = _brandLogos[index];
     setState(() => _saving = true);
     try {
-      await ref.read(profileRepositoryProvider).clearLogoUrl(uid);
-      setState(() => _logoUrl = null);
+      await ref.read(profileRepositoryProvider).deleteBrandLogoInStorage(logo.url);
+      setState(() {
+        _brandLogos = [..._brandLogos]..removeAt(index);
+      });
       await ref.read(profileRepositoryProvider).saveProfile(_buildProfile(uid));
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -349,13 +412,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final theme = Theme.of(context);
 
     final profileAsync = ref.watch(userProfileStreamProvider);
-    if (!_syncedFromRemote) {
-      profileAsync.whenData((p) {
+    if (!_profileHydrated) {
+      profileAsync.whenData((_) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && !_syncedFromRemote) setState(() => _applyRemote(p));
+          if (!mounted || _profileHydrated) return;
+          final latest = ref.read(userProfileStreamProvider).valueOrNull;
+          if (latest == null) return;
+          setState(() {
+            _profileHydrated = true;
+            _hydrateFromProfile(latest);
+          });
         });
       });
     }
+    ref.listen<AsyncValue<UserProfile?>>(userProfileStreamProvider, (prev, next) {
+      if (!_profileHydrated) return;
+      final p = next.valueOrNull;
+      if (!mounted || p == null) return;
+      if (!_sameBrandingSnapshot(p)) {
+        setState(() => _syncBrandingUrlsFrom(p));
+      }
+      if (!_nextInvoiceNumberFocus.hasFocus) {
+        final server = (p.nextInvoiceNumber ?? '').trim();
+        final local = _nextInvoiceNumber.text.trim();
+        if (server != local) {
+          setState(() => _nextInvoiceNumber.text = server);
+        }
+      }
+    });
     final complete = ref.watch(profileCompleteProvider).valueOrNull ?? false;
 
     return Scaffold(
@@ -534,6 +618,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             keyboardType: TextInputType.number,
           ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _nextInvoiceNumber,
+            focusNode: _nextInvoiceNumberFocus,
+            decoration: InputDecoration(
+              labelText: l10n.profileNextInvoiceNumberLabel,
+              helperText: l10n.profileNextInvoiceNumberHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             '${l10n.profileInvoicePreview}: ${_previewInvoiceNumber()}',
@@ -543,49 +637,117 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const SizedBox(height: 24),
           Text(l10n.profileSectionBranding, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            l10n.profileBrandLogosTitle,
+            style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.profileBrandLogosHint,
+            style: theme.textTheme.bodySmall,
+          ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              if (_logoUrl != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: _logoUrl!,
-                    width: 72,
-                    height: 72,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              else
-                Container(
-                  width: 72,
-                  height: 72,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: theme.dividerColor),
+          SizedBox(
+            height: 108,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _brandLogos.length + 1,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (ctx, i) {
+                if (i >= _brandLogos.length) {
+                  return Material(
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.image_outlined, color: theme.disabledColor),
-                ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilledButton.tonal(
-                      onPressed: _saving ? null : _pickLogo,
-                      child: Text(l10n.profilePickLogo),
-                    ),
-                    if (_logoUrl != null)
-                      TextButton(
-                        onPressed: _saving ? null : _removeLogo,
-                        child: Text(l10n.profileRemoveLogo),
+                    child: InkWell(
+                      onTap: _saving ? null : _pickLogo,
+                      borderRadius: BorderRadius.circular(8),
+                      child: SizedBox(
+                        width: 96,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: theme.colorScheme.primary,
+                            ),
+                            const SizedBox(height: 4),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: Text(
+                                l10n.profilePickLogo,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.labelSmall,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                  ],
-                ),
-              ),
-            ],
+                    ),
+                  );
+                }
+                final logo = _brandLogos[i];
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: logo.url,
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned(
+                        top: 2,
+                        right: 2,
+                        child: Material(
+                          color: Colors.black54,
+                          shape: const CircleBorder(),
+                          child: IconButton(
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: 28,
+                              minHeight: 28,
+                            ),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                            onPressed: _saving ? null : () => _removeBrandLogoAt(i),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: ColoredBox(
+                          color: Colors.black.withValues(alpha: 0.55),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            child: Text(
+                              logo.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 12),
           ListTile(
@@ -646,11 +808,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  if (_logoUrl != null)
+                  if (_brandLogos.isNotEmpty)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: CachedNetworkImage(
-                        imageUrl: _logoUrl!,
+                        imageUrl: _brandLogos.first.url,
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,

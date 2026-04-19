@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../domain/tax/activity_category.dart';
+import '../models/brand_logo.dart';
 import '../models/branding_config.dart';
 import '../models/invoice_number_config.dart';
 import '../models/user_profile.dart';
@@ -52,14 +53,30 @@ class ProfileRepository {
     );
   }
 
-  /// Uploads logo bytes; returns download URL. Stored at [users/uid/branding/logo].
-  Future<String> uploadLogo(String uid, Uint8List bytes, String contentType) async {
-    final ref = _storage.ref('users/$uid/branding/logo');
+  /// Uploads a new brand logo; returns the entry to merge into [UserProfile.brandLogos].
+  Future<BrandLogo> uploadBrandLogo(
+    String uid,
+    Uint8List bytes,
+    String contentType, {
+    String? label,
+  }) async {
+    final id =
+        _firestore.collection('users').doc(uid).collection('_tmp').doc().id;
+    final ext = contentType.contains('png') ? 'png' : 'jpg';
+    final ref = _storage.ref('users/$uid/branding/logos/$id.$ext');
     await ref.putData(
       bytes,
       SettableMetadata(contentType: contentType),
     );
-    return ref.getDownloadURL();
+    final url = await ref.getDownloadURL();
+    return BrandLogo(id: id, url: url, label: label);
+  }
+
+  /// Best-effort delete of a logo file from Storage (ignore failures).
+  Future<void> deleteBrandLogoInStorage(String downloadUrl) async {
+    try {
+      await _storage.refFromURL(downloadUrl).delete();
+    } catch (_) {}
   }
 
   /// Uploads drawn or file signature PNG; returns download URL.
@@ -67,17 +84,31 @@ class ProfileRepository {
     final ref = _storage.ref('users/$uid/branding/signature.png');
     await ref.putData(
       pngBytes,
-      SettableMetadata(contentType: 'image/png'),
+      SettableMetadata(
+        contentType: 'image/png',
+        cacheControl: 'public, max-age=0, must-revalidate',
+      ),
     );
     return ref.getDownloadURL();
   }
 
-  Future<void> clearLogoUrl(String uid) async {
-    await _userDoc(uid).set({'logoUrl': FieldValue.delete()}, SetOptions(merge: true));
-  }
-
   Future<void> clearSignatureUrl(String uid) async {
     await _userDoc(uid).set({'signatureUrl': FieldValue.delete()}, SetOptions(merge: true));
+  }
+
+  List<BrandLogo> _brandLogosFromData(Map<String, dynamic> data) {
+    final raw = data['brandLogos'];
+    if (raw is List && raw.isNotEmpty) {
+      return raw
+          .map(BrandLogo.fromFirestore)
+          .whereType<BrandLogo>()
+          .toList();
+    }
+    final legacy = data['logoUrl'] as String?;
+    if (legacy != null && legacy.isNotEmpty) {
+      return [BrandLogo(id: 'migrated', url: legacy)];
+    }
+    return [];
   }
 
   UserProfile _profileFromMap(String uid, Map<String, dynamic> data) {
@@ -104,7 +135,7 @@ class ProfileRepository {
       activityCategory: category,
       hasCnss: data['hasCnss'] as bool? ?? false,
       address: data['address'] as String? ?? '',
-      logoUrl: data['logoUrl'] as String?,
+      brandLogos: _brandLogosFromData(data),
       signatureUrl: data['signatureUrl'] as String?,
       branding: BrandingConfig(
         accentColorArgb: accent is int ? accent : null,
@@ -115,10 +146,17 @@ class ProfileRepository {
         pattern: invPattern,
         countDigits: invDigits.clamp(1, 12),
       ),
+      nextInvoiceNumber: () {
+        final s = data['nextInvoiceNumber'] as String?;
+        if (s == null) return null;
+        final t = s.trim();
+        return t.isEmpty ? null : t;
+      }(),
     );
   }
 
   Map<String, dynamic> _profileToMap(UserProfile p) {
+    final nextInv = p.nextInvoiceNumber?.trim();
     return {
       'businessName': p.name.trim(),
       'cin': p.cin.trim(),
@@ -130,7 +168,10 @@ class ProfileRepository {
       'activityCategory': p.activityCategory.name,
       'hasCnss': p.hasCnss,
       'address': p.address.trim(),
-      'logoUrl': p.logoUrl,
+      'brandLogos': p.brandLogos.map((e) => e.toMap()).toList(),
+      'logoUrl': p.brandLogos.isNotEmpty
+          ? p.brandLogos.first.url
+          : FieldValue.delete(),
       'signatureUrl': p.signatureUrl,
       'brandingAccentArgb': p.branding.accentColorArgb,
       'brandingTemplateId': p.branding.templateId,
@@ -139,6 +180,9 @@ class ProfileRepository {
           ? '{prefix}_{year}_{count}'
           : p.invoiceNumberConfig.pattern.trim(),
       'invoiceNumberCountDigits': p.invoiceNumberConfig.countDigits.clamp(1, 12),
+      'nextInvoiceNumber': (nextInv != null && nextInv.isNotEmpty)
+          ? nextInv
+          : FieldValue.delete(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

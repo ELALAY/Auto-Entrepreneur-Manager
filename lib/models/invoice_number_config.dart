@@ -51,3 +51,12 @@ String formatInvoiceNumber(
       .replaceAll('{year}', year.toString())
       .replaceAll('{count}', countStr);
 }
+
+/// Last run of digits at the end of [raw], parsed as an integer (e.g. `INV_2026_016` → 16).
+///
+/// Used to advance the per-year counter when the user enters a manual invoice number.
+int? parseTrailingInvoiceSequence(String raw) {
+  final m = RegExp(r'(\d+)\s*$').firstMatch(raw.trim());
+  if (m == null) return null;
+  return int.tryParse(m.group(1)!);
+}

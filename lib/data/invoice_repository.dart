@@ -1,5 +1,8 @@
+import 'dart:math' show max;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../domain/tax/activity_category.dart';
 import '../models/enums.dart';
 import '../models/invoice_number_config.dart';
 import '../models/invoice.dart';
@@ -13,14 +16,108 @@ class InvoiceRepository {
 
   final FirebaseFirestore _firestore;
 
+  DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
+      _firestore.doc('users/$uid');
+
   DocumentReference<Map<String, dynamic>> _counterRef(String uid) =>
       _firestore.doc('users/$uid/meta/invoiceCounter');
+
+  /// Same fields as [ProfileRepository] — read inside [createInvoice]'s transaction
+  /// so numbering always matches committed Firestore data (avoids stale cache).
+  InvoiceNumberConfig _invoiceNumberConfigFromUserData(
+    Map<String, dynamic>? data,
+  ) {
+    if (data == null) return const InvoiceNumberConfig();
+    final prefix = data['invoiceNumberPrefix'] as String? ?? 'INV';
+    final pattern = data['invoiceNumberPattern'] as String? ??
+        '{prefix}_{year}_{count}';
+    final digits = (data['invoiceNumberCountDigits'] as num?)?.toInt() ?? 3;
+    return InvoiceNumberConfig(
+      prefix: prefix,
+      pattern: pattern,
+      countDigits: digits.clamp(1, 12),
+    );
+  }
+
+  String? _nextInvoiceNumberFromUserData(Map<String, dynamic>? data) {
+    if (data == null) return null;
+    final s = data['nextInvoiceNumber'] as String?;
+    if (s == null) return null;
+    final t = s.trim();
+    return t.isEmpty ? null : t;
+  }
+
+  /// Read-only preview of the next invoice number (does not increment the counter).
+  /// Uses the same rules as [createInvoice] for profile format and per-year sequence.
+  Future<String> previewNextInvoiceNumber({
+    required String uid,
+    required DateTime issueDate,
+  }) async {
+    final userSnap = await _userDoc(uid).get();
+    final queued = _nextInvoiceNumberFromUserData(userSnap.data());
+    if (queued != null) return queued;
+    final cfg = normalizeInvoiceNumberConfig(
+      _invoiceNumberConfigFromUserData(userSnap.data()),
+    );
+    final cSnap = await _counterRef(uid).get();
+    final counterData = cSnap.data() ?? {};
+    final yearKey = issueDate.year.toString();
+    var yearLast = <String, dynamic>{};
+    final rawYear = counterData['yearLast'];
+    if (rawYear is Map) {
+      yearLast = Map<String, dynamic>.from(
+        rawYear.map((k, v) => MapEntry(k.toString(), v)),
+      );
+    }
+    final lastForYear = (yearLast[yearKey] as num?)?.toInt() ?? 0;
+    final next = lastForYear + 1;
+    return formatInvoiceNumber(
+      cfg,
+      year: issueDate.year,
+      count: next,
+    );
+  }
 
   CollectionReference<Map<String, dynamic>> _invoices(String uid) =>
       _firestore.collection('users/$uid/invoices');
 
   CollectionReference<Map<String, dynamic>> _payments(String uid, String invoiceId) =>
       _firestore.collection('users/$uid/invoices/$invoiceId/payments');
+
+  /// Writes logo choice for new invoices (always explicit).
+  Map<String, dynamic> _newInvoiceLogoFields({
+    required bool invoiceUseBundledLogo,
+    String? invoiceLogoUrl,
+  }) {
+    if (invoiceUseBundledLogo) {
+      return {
+        'invoiceUseBundledLogo': true,
+        'invoiceLogoUrl': FieldValue.delete(),
+      };
+    }
+    return {
+      'invoiceUseBundledLogo': false,
+      'invoiceLogoUrl': invoiceLogoUrl?.trim() ?? '',
+    };
+  }
+
+  /// On update, omit keys when the invoice never had logo fields (legacy) and the model
+  /// still has nulls, so we do not overwrite Firestore.
+  Map<String, dynamic> _updateInvoiceLogoFields(Invoice inv) {
+    if (inv.invoiceUseBundledLogo == null) {
+      return {};
+    }
+    if (inv.invoiceUseBundledLogo == true) {
+      return {
+        'invoiceUseBundledLogo': true,
+        'invoiceLogoUrl': FieldValue.delete(),
+      };
+    }
+    return {
+      'invoiceUseBundledLogo': false,
+      'invoiceLogoUrl': inv.invoiceLogoUrl?.trim() ?? '',
+    };
+  }
 
   Stream<List<InvoiceSummary>> watchInvoiceSummaries(String uid) {
     return _invoices(uid)
@@ -62,6 +159,15 @@ class InvoiceRepository {
   }
 
   /// Assigns a per-calendar-year sequential number and formats it; returns new invoice id.
+  ///
+  /// Invoice number formatting is read from `users/{uid}` inside this transaction so it
+  /// always matches persisted profile fields (not a possibly stale [getProfile] cache).
+  ///
+  /// When [numberOverride] is null or empty, if `users/{uid}.nextInvoiceNumber` is set it is
+  /// used once as the invoice number, then removed from the user document (same transaction).
+  ///
+  /// If [numberOverride] is non-empty after trim, it is stored as-is; trailing digits are
+  /// used to bump the yearly counter so automatic numbering can continue after manual values.
   Future<String> createInvoice({
     required String uid,
     required String clientId,
@@ -74,15 +180,23 @@ class InvoiceRepository {
     required InvoiceStatus status,
     required List<InvoiceItem> items,
     required bool signatureEnabled,
-    required InvoiceNumberConfig invoiceNumberConfig,
+    required bool invoiceUseBundledLogo,
+    String? invoiceLogoUrl,
+    String? numberOverride,
     String? templateId,
     String? notes,
+    ActivityCategory? activityCategory,
   }) async {
     final ref = _invoices(uid).doc();
     final id = ref.id;
     final total = items.fold<double>(0, (s, i) => s + i.lineTotal);
 
     await _firestore.runTransaction((txn) async {
+      final userSnap = await txn.get(_userDoc(uid));
+      final invoiceNumberConfig = _invoiceNumberConfigFromUserData(
+        userSnap.data(),
+      );
+
       final cSnap = await txn.get(_counterRef(uid));
       final counterData = cSnap.data() ?? {};
       final yearKey = issueDate.year.toString();
@@ -94,15 +208,44 @@ class InvoiceRepository {
         );
       }
       final lastForYear = (yearLast[yearKey] as num?)?.toInt() ?? 0;
-      final next = lastForYear + 1;
-      yearLast[yearKey] = next;
 
       final cfg = normalizeInvoiceNumberConfig(invoiceNumberConfig);
-      final numberStr = formatInvoiceNumber(
-        cfg,
-        year: issueDate.year,
-        count: next,
-      );
+      final trimmedOverride = numberOverride?.trim();
+
+      final String numberStr;
+      if (trimmedOverride != null && trimmedOverride.isNotEmpty) {
+        numberStr = trimmedOverride;
+        final parsed = parseTrailingInvoiceSequence(trimmedOverride);
+        if (parsed != null) {
+          yearLast[yearKey] = max(lastForYear, parsed);
+        } else {
+          yearLast[yearKey] = lastForYear;
+        }
+      } else {
+        final queuedNext = _nextInvoiceNumberFromUserData(userSnap.data());
+        if (queuedNext != null) {
+          numberStr = queuedNext;
+          final parsed = parseTrailingInvoiceSequence(queuedNext);
+          if (parsed != null) {
+            yearLast[yearKey] = max(lastForYear, parsed);
+          } else {
+            yearLast[yearKey] = lastForYear;
+          }
+          txn.set(
+            _userDoc(uid),
+            {'nextInvoiceNumber': FieldValue.delete()},
+            SetOptions(merge: true),
+          );
+        } else {
+          final next = lastForYear + 1;
+          yearLast[yearKey] = next;
+          numberStr = formatInvoiceNumber(
+            cfg,
+            year: issueDate.year,
+            count: next,
+          );
+        }
+      }
 
       txn.set(
         _counterRef(uid),
@@ -125,8 +268,13 @@ class InvoiceRepository {
         'signatureEnabled': signatureEnabled,
         'templateId': templateId,
         'notes': notes,
+        if (activityCategory != null) 'activityCategory': activityCategory.name,
         'total': total,
         'paidTotal': 0.0,
+        ..._newInvoiceLogoFields(
+          invoiceUseBundledLogo: invoiceUseBundledLogo,
+          invoiceLogoUrl: invoiceLogoUrl,
+        ),
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -137,6 +285,7 @@ class InvoiceRepository {
 
   Future<void> updateInvoice(Invoice invoice) async {
     final total = invoice.items.fold<double>(0, (s, i) => s + i.lineTotal);
+    final numberTrimmed = invoice.number.trim();
     await _invoices(invoice.userId).doc(invoice.id).set(
           {
             'clientId': invoice.clientId,
@@ -144,6 +293,7 @@ class InvoiceRepository {
             'clientAddress': invoice.clientAddress,
             'clientIce': invoice.clientIce,
             'clientIf': invoice.clientIf,
+            'number': numberTrimmed,
             'issueDate': Timestamp.fromDate(invoice.issueDate),
             'dueDate': Timestamp.fromDate(invoice.dueDate),
             'status': invoice.status.name,
@@ -151,11 +301,49 @@ class InvoiceRepository {
             'signatureEnabled': invoice.signatureEnabled,
             'templateId': invoice.templateId,
             'notes': invoice.notes,
+            if (invoice.activityCategory != null)
+              'activityCategory': invoice.activityCategory!.name,
             'total': total,
+            ..._updateInvoiceLogoFields(invoice),
             'updatedAt': FieldValue.serverTimestamp(),
           },
           SetOptions(merge: true),
         );
+    await _syncYearCounterToAtLeast(
+      invoice.userId,
+      invoice.issueDate.year,
+      numberTrimmed,
+    );
+  }
+
+  /// Bumps `yearLast` when [invoiceNumber] ends with a digit group larger than the stored counter.
+  Future<void> _syncYearCounterToAtLeast(
+    String uid,
+    int year,
+    String invoiceNumber,
+  ) async {
+    final parsed = parseTrailingInvoiceSequence(invoiceNumber);
+    if (parsed == null) return;
+    await _firestore.runTransaction((txn) async {
+      final cSnap = await txn.get(_counterRef(uid));
+      final counterData = cSnap.data() ?? {};
+      final yearKey = year.toString();
+      var yearLast = <String, dynamic>{};
+      final rawYear = counterData['yearLast'];
+      if (rawYear is Map) {
+        yearLast = Map<String, dynamic>.from(
+          rawYear.map((k, v) => MapEntry(k.toString(), v)),
+        );
+      }
+      final lastForYear = (yearLast[yearKey] as num?)?.toInt() ?? 0;
+      if (parsed <= lastForYear) return;
+      yearLast[yearKey] = parsed;
+      txn.set(
+        _counterRef(uid),
+        {'yearLast': yearLast},
+        SetOptions(merge: true),
+      );
+    });
   }
 
   Future<void> addPayment({
@@ -266,32 +454,7 @@ class InvoiceRepository {
   }
 
   InvoiceSummary _summaryFromDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data();
-    final ts = data['issueDate'];
-    DateTime issueDate;
-    if (ts is Timestamp) {
-      issueDate = ts.toDate();
-    } else {
-      issueDate = DateTime.fromMillisecondsSinceEpoch(0);
-    }
-    final dts = data['dueDate'];
-    DateTime dueDate;
-    if (dts is Timestamp) {
-      dueDate = dts.toDate();
-    } else {
-      dueDate = issueDate;
-    }
-    return InvoiceSummary(
-      id: doc.id,
-      number: data['number'] as String? ?? doc.id,
-      issueDate: issueDate,
-      dueDate: dueDate,
-      status: data['status'] as String? ?? 'draft',
-      clientId: data['clientId'] as String? ?? '',
-      clientName: data['clientName'] as String? ?? '',
-      total: (data['total'] as num?)?.toDouble() ?? 0,
-      paidTotal: (data['paidTotal'] as num?)?.toDouble() ?? 0,
-    );
+    return InvoiceSummary.fromFirestoreDoc(doc.id, doc.data());
   }
 
   Invoice _invoiceFromDoc(String uid, DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -306,6 +469,16 @@ class InvoiceRepository {
           items.add(_itemFromMap(Map<String, dynamic>.from(e)));
         }
       }
+    }
+
+    final bool? invoiceUseBundledLogo;
+    final String? invoiceLogoUrl;
+    if (data.containsKey('invoiceUseBundledLogo')) {
+      invoiceUseBundledLogo = data['invoiceUseBundledLogo'] as bool? ?? false;
+      invoiceLogoUrl = data['invoiceLogoUrl'] as String?;
+    } else {
+      invoiceUseBundledLogo = null;
+      invoiceLogoUrl = null;
     }
 
     return Invoice(
@@ -325,6 +498,9 @@ class InvoiceRepository {
       templateId: data['templateId'] as String?,
       notes: data['notes'] as String?,
       paidTotal: (data['paidTotal'] as num?)?.toDouble() ?? 0,
+      activityCategory: parseActivityCategoryField(data['activityCategory']),
+      invoiceUseBundledLogo: invoiceUseBundledLogo,
+      invoiceLogoUrl: invoiceLogoUrl,
     );
   }
 

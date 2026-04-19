@@ -217,6 +217,72 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reusable services and products for invoices.';
 
   @override
+  String get catalogListError => 'Could not load catalog.';
+
+  @override
+  String get catalogListEmpty => 'No catalog items yet.';
+
+  @override
+  String get catalogListEmptyHint =>
+      'Tap + to add a product or service you use often on invoices.';
+
+  @override
+  String get catalogKindProduct => 'Product';
+
+  @override
+  String get catalogKindService => 'Service';
+
+  @override
+  String get catalogAddTitle => 'New catalog item';
+
+  @override
+  String get catalogEditTitle => 'Edit catalog item';
+
+  @override
+  String get catalogFieldKind => 'Type';
+
+  @override
+  String get catalogFieldDescription => 'Description (on invoice line)';
+
+  @override
+  String get catalogFieldDefaultUnitPrice => 'Default unit price (MAD)';
+
+  @override
+  String get catalogValidationDescription => 'Enter a description.';
+
+  @override
+  String get catalogValidationPrice => 'Enter a valid price (0 or more).';
+
+  @override
+  String get catalogSaved => 'Catalog item saved.';
+
+  @override
+  String get catalogSaveError => 'Could not save. Try again.';
+
+  @override
+  String get catalogDeleteTitle => 'Delete this item?';
+
+  @override
+  String get catalogDeleteBody =>
+      'It will be removed from the catalog. Existing invoices are unchanged.';
+
+  @override
+  String get catalogDeleted => 'Catalog item deleted.';
+
+  @override
+  String get catalogNotFound => 'Catalog item not found.';
+
+  @override
+  String get invoiceAddFromCatalog => 'Add from catalog';
+
+  @override
+  String get invoicePickCatalogTitle => 'Pick a catalog item';
+
+  @override
+  String get invoiceCatalogEmptyBody =>
+      'Add reusable lines under More → Services.';
+
+  @override
   String get placeholderProfile =>
       'Business profile, branding, and tax activity category.';
 
@@ -291,6 +357,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Minimum width for the yearly counter (e.g. 3 → 045).';
 
   @override
+  String get profileNextInvoiceNumberLabel => 'Next invoice number';
+
+  @override
+  String get profileNextInvoiceNumberHint =>
+      'Optional. If set, the next new invoice defaults to this exact value; after that invoice is created it is cleared and the yearly counter is updated from trailing digits when possible. Leave empty to use only the automatic sequence.';
+
+  @override
   String get profileInvoicePreview => 'Preview';
 
   @override
@@ -342,6 +415,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSectionBranding => 'Invoice branding';
+
+  @override
+  String get profileBrandLogosTitle => 'Brand logos';
+
+  @override
+  String get profileBrandLogosHint =>
+      'Upload several images; add an optional name for each. When creating an invoice, choose which logo appears on the PDF or use the app default.';
+
+  @override
+  String get profileLogoNameDialogTitle => 'Add logo';
+
+  @override
+  String get profileLogoOptionalNameHint => 'Optional name (e.g. brand)';
+
+  @override
+  String get profileLogoNameDialogSave => 'Add';
+
+  @override
+  String get invoiceFieldLogo => 'Logo on PDF';
+
+  @override
+  String get invoiceLogoBundledDefault => 'App default (bundled image)';
+
+  @override
+  String get invoiceLogoChoiceHint =>
+      'Uses this invoice only; your profile logos are managed in settings.';
 
   @override
   String get profilePickLogo => 'Upload logo';
@@ -487,6 +586,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invoiceNumberLabel => 'Invoice number';
 
   @override
+  String get invoiceNumberManualHint =>
+      'Pre-filled with the next number from your profile settings. Edit it or clear the field to use automatic numbering; a custom value can match invoices issued outside the app (trailing digits update the yearly counter).';
+
+  @override
   String get invoiceFieldClient => 'Client';
 
   @override
@@ -609,6 +712,86 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invoiceListEmpty => 'No invoices yet. Tap + to create one.';
+
+  @override
+  String get invoiceListFilteredEmpty => 'No invoices match these filters.';
+
+  @override
+  String get invoiceFilterTitle => 'Filter invoices';
+
+  @override
+  String get invoiceFilterApply => 'Apply';
+
+  @override
+  String get invoiceFilterReset => 'Clear all';
+
+  @override
+  String get invoiceFilterClient => 'Client';
+
+  @override
+  String get invoiceFilterAllClients => 'All clients';
+
+  @override
+  String get invoiceFilterCatalogItem => 'Catalog item';
+
+  @override
+  String get invoiceFilterAnyCatalogItem => 'Any item';
+
+  @override
+  String get invoiceFilterLineKind => 'Line type (catalog)';
+
+  @override
+  String get invoiceFilterLineKindAny => 'Any';
+
+  @override
+  String get invoiceFilterLineKindProduct => 'Contains a product line';
+
+  @override
+  String get invoiceFilterLineKindService => 'Contains a service line';
+
+  @override
+  String get invoiceFilterActivity => 'Activity category';
+
+  @override
+  String get invoiceFilterActivityAny => 'Any';
+
+  @override
+  String get invoiceFilterAmountMin => 'Min total (MAD)';
+
+  @override
+  String get invoiceFilterAmountMax => 'Max total (MAD)';
+
+  @override
+  String get invoiceFilterIssueDate => 'Issue date';
+
+  @override
+  String get invoiceFilterDateAny => 'Any';
+
+  @override
+  String get invoiceFilterDateQuarter => 'Quarter';
+
+  @override
+  String get invoiceFilterDateMonth => 'Month';
+
+  @override
+  String get invoiceFilterDateRange => 'Date range';
+
+  @override
+  String get invoiceFilterDateSingle => 'Single day';
+
+  @override
+  String get invoiceFilterFrom => 'From';
+
+  @override
+  String get invoiceFilterTo => 'To';
+
+  @override
+  String get invoiceFilterPickDay => 'Pick day';
+
+  @override
+  String invoiceFilterResults(int shown, int total) {
+    return '$shown of $total';
+  }
 
   @override
   String get invoiceBadgeOverdue => 'Overdue';

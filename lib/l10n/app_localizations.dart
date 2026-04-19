@@ -448,6 +448,132 @@ abstract class AppLocalizations {
   /// **'Reusable services and products for invoices.'**
   String get placeholderServices;
 
+  /// No description provided for @catalogListError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load catalog.'**
+  String get catalogListError;
+
+  /// No description provided for @catalogListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No catalog items yet.'**
+  String get catalogListEmpty;
+
+  /// No description provided for @catalogListEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add a product or service you use often on invoices.'**
+  String get catalogListEmptyHint;
+
+  /// No description provided for @catalogKindProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get catalogKindProduct;
+
+  /// No description provided for @catalogKindService.
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get catalogKindService;
+
+  /// No description provided for @catalogAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New catalog item'**
+  String get catalogAddTitle;
+
+  /// No description provided for @catalogEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit catalog item'**
+  String get catalogEditTitle;
+
+  /// No description provided for @catalogFieldKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get catalogFieldKind;
+
+  /// No description provided for @catalogFieldDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (on invoice line)'**
+  String get catalogFieldDescription;
+
+  /// No description provided for @catalogFieldDefaultUnitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Default unit price (MAD)'**
+  String get catalogFieldDefaultUnitPrice;
+
+  /// No description provided for @catalogValidationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a description.'**
+  String get catalogValidationDescription;
+
+  /// No description provided for @catalogValidationPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid price (0 or more).'**
+  String get catalogValidationPrice;
+
+  /// No description provided for @catalogSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog item saved.'**
+  String get catalogSaved;
+
+  /// No description provided for @catalogSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Try again.'**
+  String get catalogSaveError;
+
+  /// No description provided for @catalogDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this item?'**
+  String get catalogDeleteTitle;
+
+  /// No description provided for @catalogDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It will be removed from the catalog. Existing invoices are unchanged.'**
+  String get catalogDeleteBody;
+
+  /// No description provided for @catalogDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog item deleted.'**
+  String get catalogDeleted;
+
+  /// No description provided for @catalogNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog item not found.'**
+  String get catalogNotFound;
+
+  /// No description provided for @invoiceAddFromCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add from catalog'**
+  String get invoiceAddFromCatalog;
+
+  /// No description provided for @invoicePickCatalogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a catalog item'**
+  String get invoicePickCatalogTitle;
+
+  /// No description provided for @invoiceCatalogEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add reusable lines under More → Services.'**
+  String get invoiceCatalogEmptyBody;
+
   /// No description provided for @placeholderProfile.
   ///
   /// In en, this message translates to:
@@ -586,6 +712,18 @@ abstract class AppLocalizations {
   /// **'Minimum width for the yearly counter (e.g. 3 → 045).'**
   String get profileInvoiceCountDigitsHint;
 
+  /// No description provided for @profileNextInvoiceNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next invoice number'**
+  String get profileNextInvoiceNumberLabel;
+
+  /// No description provided for @profileNextInvoiceNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. If set, the next new invoice defaults to this exact value; after that invoice is created it is cleared and the yearly counter is updated from trailing digits when possible. Leave empty to use only the automatic sequence.'**
+  String get profileNextInvoiceNumberHint;
+
   /// No description provided for @profileInvoicePreview.
   ///
   /// In en, this message translates to:
@@ -681,6 +819,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invoice branding'**
   String get profileSectionBranding;
+
+  /// No description provided for @profileBrandLogosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand logos'**
+  String get profileBrandLogosTitle;
+
+  /// No description provided for @profileBrandLogosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload several images; add an optional name for each. When creating an invoice, choose which logo appears on the PDF or use the app default.'**
+  String get profileBrandLogosHint;
+
+  /// No description provided for @profileLogoNameDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add logo'**
+  String get profileLogoNameDialogTitle;
+
+  /// No description provided for @profileLogoOptionalNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional name (e.g. brand)'**
+  String get profileLogoOptionalNameHint;
+
+  /// No description provided for @profileLogoNameDialogSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get profileLogoNameDialogSave;
+
+  /// No description provided for @invoiceFieldLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo on PDF'**
+  String get invoiceFieldLogo;
+
+  /// No description provided for @invoiceLogoBundledDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'App default (bundled image)'**
+  String get invoiceLogoBundledDefault;
+
+  /// No description provided for @invoiceLogoChoiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses this invoice only; your profile logos are managed in settings.'**
+  String get invoiceLogoChoiceHint;
 
   /// No description provided for @profilePickLogo.
   ///
@@ -952,6 +1138,12 @@ abstract class AppLocalizations {
   /// **'Invoice number'**
   String get invoiceNumberLabel;
 
+  /// No description provided for @invoiceNumberManualHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-filled with the next number from your profile settings. Edit it or clear the field to use automatic numbering; a custom value can match invoices issued outside the app (trailing digits update the yearly counter).'**
+  String get invoiceNumberManualHint;
+
   /// No description provided for @invoiceFieldClient.
   ///
   /// In en, this message translates to:
@@ -1191,6 +1383,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No invoices yet. Tap + to create one.'**
   String get invoiceListEmpty;
+
+  /// No description provided for @invoiceListFilteredEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoices match these filters.'**
+  String get invoiceListFilteredEmpty;
+
+  /// No description provided for @invoiceFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter invoices'**
+  String get invoiceFilterTitle;
+
+  /// No description provided for @invoiceFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get invoiceFilterApply;
+
+  /// No description provided for @invoiceFilterReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get invoiceFilterReset;
+
+  /// No description provided for @invoiceFilterClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get invoiceFilterClient;
+
+  /// No description provided for @invoiceFilterAllClients.
+  ///
+  /// In en, this message translates to:
+  /// **'All clients'**
+  String get invoiceFilterAllClients;
+
+  /// No description provided for @invoiceFilterCatalogItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog item'**
+  String get invoiceFilterCatalogItem;
+
+  /// No description provided for @invoiceFilterAnyCatalogItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Any item'**
+  String get invoiceFilterAnyCatalogItem;
+
+  /// No description provided for @invoiceFilterLineKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Line type (catalog)'**
+  String get invoiceFilterLineKind;
+
+  /// No description provided for @invoiceFilterLineKindAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get invoiceFilterLineKindAny;
+
+  /// No description provided for @invoiceFilterLineKindProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains a product line'**
+  String get invoiceFilterLineKindProduct;
+
+  /// No description provided for @invoiceFilterLineKindService.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains a service line'**
+  String get invoiceFilterLineKindService;
+
+  /// No description provided for @invoiceFilterActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity category'**
+  String get invoiceFilterActivity;
+
+  /// No description provided for @invoiceFilterActivityAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get invoiceFilterActivityAny;
+
+  /// No description provided for @invoiceFilterAmountMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min total (MAD)'**
+  String get invoiceFilterAmountMin;
+
+  /// No description provided for @invoiceFilterAmountMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max total (MAD)'**
+  String get invoiceFilterAmountMax;
+
+  /// No description provided for @invoiceFilterIssueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get invoiceFilterIssueDate;
+
+  /// No description provided for @invoiceFilterDateAny.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get invoiceFilterDateAny;
+
+  /// No description provided for @invoiceFilterDateQuarter.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter'**
+  String get invoiceFilterDateQuarter;
+
+  /// No description provided for @invoiceFilterDateMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get invoiceFilterDateMonth;
+
+  /// No description provided for @invoiceFilterDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get invoiceFilterDateRange;
+
+  /// No description provided for @invoiceFilterDateSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single day'**
+  String get invoiceFilterDateSingle;
+
+  /// No description provided for @invoiceFilterFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get invoiceFilterFrom;
+
+  /// No description provided for @invoiceFilterTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get invoiceFilterTo;
+
+  /// No description provided for @invoiceFilterPickDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick day'**
+  String get invoiceFilterPickDay;
+
+  /// No description provided for @invoiceFilterResults.
+  ///
+  /// In en, this message translates to:
+  /// **'{shown} of {total}'**
+  String invoiceFilterResults(int shown, int total);
 
   /// No description provided for @invoiceBadgeOverdue.
   ///

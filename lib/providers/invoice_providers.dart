@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/firebase_providers.dart';
+import '../features/invoices/invoice_list_filters.dart';
 import '../models/invoice.dart';
 import '../models/invoice_summary.dart';
 import '../models/payment.dart';
@@ -33,3 +34,6 @@ final invoicePaymentsStreamProvider =
   if (uid == null) return Stream.value([]);
   return ref.watch(invoiceRepositoryProvider).watchPayments(uid, invoiceId);
 });
+
+final invoiceListFilterProvider =
+    StateProvider<InvoiceListFilters>((ref) => InvoiceListFilters.empty);

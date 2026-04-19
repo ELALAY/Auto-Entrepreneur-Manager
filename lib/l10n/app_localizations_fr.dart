@@ -221,6 +221,72 @@ class AppLocalizationsFr extends AppLocalizations {
       'Prestations et produits réutilisables pour les factures.';
 
   @override
+  String get catalogListError => 'Impossible de charger le catalogue.';
+
+  @override
+  String get catalogListEmpty => 'Aucun article dans le catalogue.';
+
+  @override
+  String get catalogListEmptyHint =>
+      'Appuyez sur + pour ajouter un produit ou service souvent facturé.';
+
+  @override
+  String get catalogKindProduct => 'Produit';
+
+  @override
+  String get catalogKindService => 'Prestation';
+
+  @override
+  String get catalogAddTitle => 'Nouvel article catalogue';
+
+  @override
+  String get catalogEditTitle => 'Modifier l’article';
+
+  @override
+  String get catalogFieldKind => 'Type';
+
+  @override
+  String get catalogFieldDescription => 'Description (ligne de facture)';
+
+  @override
+  String get catalogFieldDefaultUnitPrice => 'Prix unitaire par défaut (MAD)';
+
+  @override
+  String get catalogValidationDescription => 'Saisissez une description.';
+
+  @override
+  String get catalogValidationPrice => 'Saisissez un prix valide (≥ 0).';
+
+  @override
+  String get catalogSaved => 'Article enregistré.';
+
+  @override
+  String get catalogSaveError => 'Enregistrement impossible. Réessayez.';
+
+  @override
+  String get catalogDeleteTitle => 'Supprimer cet article ?';
+
+  @override
+  String get catalogDeleteBody =>
+      'Il sera retiré du catalogue. Les factures déjà créées ne changent pas.';
+
+  @override
+  String get catalogDeleted => 'Article supprimé.';
+
+  @override
+  String get catalogNotFound => 'Article introuvable.';
+
+  @override
+  String get invoiceAddFromCatalog => 'Ajouter depuis le catalogue';
+
+  @override
+  String get invoicePickCatalogTitle => 'Choisir un article';
+
+  @override
+  String get invoiceCatalogEmptyBody =>
+      'Ajoutez des lignes réutilisables dans Plus → Prestations.';
+
+  @override
   String get placeholderProfile =>
       'Profil d\'entreprise, image de marque et catégorie d\'activité.';
 
@@ -295,6 +361,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Largeur minimale du compteur annuel (ex. 3 → 045).';
 
   @override
+  String get profileNextInvoiceNumberLabel => 'Prochain numéro de facture';
+
+  @override
+  String get profileNextInvoiceNumberHint =>
+      'Facultatif. S\'il est renseigné, la prochaine facture créée utilisera exactement cette valeur ; après création, le champ est effacé et le compteur annuel est mis à jour à partir des chiffres en fin de numéro lorsque c\'est possible. Laissez vide pour n\'utiliser que la séquence automatique.';
+
+  @override
   String get profileInvoicePreview => 'Aperçu';
 
   @override
@@ -346,6 +419,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileSectionBranding => 'Image de facture';
+
+  @override
+  String get profileBrandLogosTitle => 'Logos de marque';
+
+  @override
+  String get profileBrandLogosHint =>
+      'Importez plusieurs images ; nom facultatif. Sur chaque facture, choisissez le logo du PDF ou l\'image par défaut de l\'application.';
+
+  @override
+  String get profileLogoNameDialogTitle => 'Ajouter un logo';
+
+  @override
+  String get profileLogoOptionalNameHint => 'Nom facultatif (ex. marque)';
+
+  @override
+  String get profileLogoNameDialogSave => 'Ajouter';
+
+  @override
+  String get invoiceFieldLogo => 'Logo sur le PDF';
+
+  @override
+  String get invoiceLogoBundledDefault => 'Image par défaut de l\'application';
+
+  @override
+  String get invoiceLogoChoiceHint =>
+      'S\'applique à cette facture uniquement ; les logos sont gérés dans le profil.';
 
   @override
   String get profilePickLogo => 'Importer un logo';
@@ -491,6 +590,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invoiceNumberLabel => 'Numéro de facture';
 
   @override
+  String get invoiceNumberManualHint =>
+      'Prérempli avec le prochain numéro selon votre profil. Modifiez-le ou videz le champ pour la numérotation automatique ; une valeur personnalisée peut reprendre votre série (chiffres en fin mettent à jour le compteur annuel).';
+
+  @override
   String get invoiceFieldClient => 'Client';
 
   @override
@@ -615,6 +718,87 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get invoiceListEmpty =>
       'Aucune facture. Appuyez sur + pour en créer une.';
+
+  @override
+  String get invoiceListFilteredEmpty =>
+      'Aucune facture ne correspond à ces filtres.';
+
+  @override
+  String get invoiceFilterTitle => 'Filtrer les factures';
+
+  @override
+  String get invoiceFilterApply => 'Appliquer';
+
+  @override
+  String get invoiceFilterReset => 'Tout effacer';
+
+  @override
+  String get invoiceFilterClient => 'Client';
+
+  @override
+  String get invoiceFilterAllClients => 'Tous les clients';
+
+  @override
+  String get invoiceFilterCatalogItem => 'Article du catalogue';
+
+  @override
+  String get invoiceFilterAnyCatalogItem => 'Tous les articles';
+
+  @override
+  String get invoiceFilterLineKind => 'Type de ligne (catalogue)';
+
+  @override
+  String get invoiceFilterLineKindAny => 'Tous';
+
+  @override
+  String get invoiceFilterLineKindProduct => 'Contient une ligne produit';
+
+  @override
+  String get invoiceFilterLineKindService => 'Contient une ligne service';
+
+  @override
+  String get invoiceFilterActivity => 'Catégorie d\'activité';
+
+  @override
+  String get invoiceFilterActivityAny => 'Toutes';
+
+  @override
+  String get invoiceFilterAmountMin => 'Total min (MAD)';
+
+  @override
+  String get invoiceFilterAmountMax => 'Total max (MAD)';
+
+  @override
+  String get invoiceFilterIssueDate => 'Date d\'émission';
+
+  @override
+  String get invoiceFilterDateAny => 'Toutes';
+
+  @override
+  String get invoiceFilterDateQuarter => 'Trimestre';
+
+  @override
+  String get invoiceFilterDateMonth => 'Mois';
+
+  @override
+  String get invoiceFilterDateRange => 'Plage de dates';
+
+  @override
+  String get invoiceFilterDateSingle => 'Un jour';
+
+  @override
+  String get invoiceFilterFrom => 'Du';
+
+  @override
+  String get invoiceFilterTo => 'Au';
+
+  @override
+  String get invoiceFilterPickDay => 'Choisir le jour';
+
+  @override
+  String invoiceFilterResults(int shown, int total) {
+    return '$shown sur $total';
+  }
 
   @override
   String get invoiceBadgeOverdue => 'En retard';

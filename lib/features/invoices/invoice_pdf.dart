@@ -19,9 +19,34 @@ Future<void> _ensureFrenchLocaleData() =>
 Future<Uint8List?> _loadUrlBytes(String? url) async {
   if (url == null || url.isEmpty) return null;
   try {
-    final r = await http.get(Uri.parse(url));
+    final r = await http.get(
+      Uri.parse(url),
+      headers: const {'Cache-Control': 'no-cache'},
+    );
     if (r.statusCode == 200) return r.bodyBytes;
   } catch (_) {}
+  return null;
+}
+
+/// Returns downloaded bytes, or null to use the bundled default asset.
+Future<Uint8List?> _resolveInvoiceHeaderLogoBytes(
+  Invoice invoice,
+  UserProfile profile,
+) async {
+  if (invoice.invoiceUseBundledLogo == true) {
+    return null;
+  }
+  if (invoice.invoiceUseBundledLogo == false) {
+    final u = invoice.invoiceLogoUrl?.trim();
+    if (u != null && u.isNotEmpty) {
+      return _loadUrlBytes(u);
+    }
+    return null;
+  }
+  // Legacy invoice (no logo fields): first profile brand logo if any.
+  if (profile.brandLogos.isNotEmpty) {
+    return _loadUrlBytes(profile.brandLogos.first.url);
+  }
   return null;
 }
 
@@ -67,8 +92,8 @@ Future<Uint8List> buildInvoicePdfBytes({
     bold = loaded[1];
   }
 
-  // Logo: user's uploaded logo → fallback to bundled ae.png
-  Uint8List? logoBytes = await _loadUrlBytes(profile.logoUrl);
+  // Logo: per-invoice choice → legacy first brand → bundled ae.png
+  Uint8List? logoBytes = await _resolveInvoiceHeaderLogoBytes(invoice, profile);
   if (logoBytes == null) {
     try {
       final data = await rootBundle.load(_defaultLogoAsset);

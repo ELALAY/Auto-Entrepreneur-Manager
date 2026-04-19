@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'catalog_repository.dart';
 import 'client_repository.dart';
 import 'declaration_repository.dart';
 import 'invoice_repository.dart';
@@ -25,6 +26,10 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
 
 final clientRepositoryProvider = Provider<ClientRepository>((ref) {
   return ClientRepository(ref.watch(firebaseFirestoreProvider));
+});
+
+final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
+  return CatalogRepository(ref.watch(firebaseFirestoreProvider));
 });
 
 final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) {

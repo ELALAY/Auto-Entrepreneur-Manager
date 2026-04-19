@@ -1,3 +1,4 @@
+import '../domain/tax/activity_category.dart';
 import 'enums.dart';
 import 'invoice_item.dart';
 
@@ -19,6 +20,9 @@ class Invoice {
     required this.paidTotal,
     this.templateId,
     this.notes,
+    this.activityCategory,
+    this.invoiceUseBundledLogo,
+    this.invoiceLogoUrl,
   });
 
   final String id;
@@ -40,8 +44,17 @@ class Invoice {
   final String? templateId;
   final String? notes;
 
+  /// Tax activity family snapshot at save time (for filtering and history).
+  final ActivityCategory? activityCategory;
+
   /// Denormalized sum of payments (updated when payments are recorded).
   final double paidTotal;
+
+  /// null: invoice has no logo fields (legacy) — PDF uses first profile brand logo if any.
+  /// true: use bundled app default image only.
+  /// false: use [invoiceLogoUrl] when set.
+  final bool? invoiceUseBundledLogo;
+  final String? invoiceLogoUrl;
 
   double get subtotal =>
       items.fold<double>(0, (sum, item) => sum + item.lineTotal);
@@ -67,8 +80,12 @@ class Invoice {
     String? templateId,
     String? notes,
     double? paidTotal,
+    ActivityCategory? activityCategory,
+    bool? invoiceUseBundledLogo,
+    String? invoiceLogoUrl,
     bool clearTemplateId = false,
     bool clearNotes = false,
+    bool clearActivityCategory = false,
   }) {
     return Invoice(
       id: id ?? this.id,
@@ -87,6 +104,12 @@ class Invoice {
       templateId: clearTemplateId ? null : (templateId ?? this.templateId),
       notes: clearNotes ? null : (notes ?? this.notes),
       paidTotal: paidTotal ?? this.paidTotal,
+      activityCategory: clearActivityCategory
+          ? null
+          : (activityCategory ?? this.activityCategory),
+      invoiceUseBundledLogo:
+          invoiceUseBundledLogo ?? this.invoiceUseBundledLogo,
+      invoiceLogoUrl: invoiceLogoUrl ?? this.invoiceLogoUrl,
     );
   }
 }

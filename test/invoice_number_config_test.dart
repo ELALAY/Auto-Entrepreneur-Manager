@@ -44,4 +44,10 @@ void main() {
       'INV_2026_001',
     );
   });
+
+  test('parseTrailingInvoiceSequence reads final digit group', () {
+    expect(parseTrailingInvoiceSequence('INV_2026_016'), 16);
+    expect(parseTrailingInvoiceSequence('FA-2026-0007'), 7);
+    expect(parseTrailingInvoiceSequence('PROVISOIRE'), isNull);
+  });
 }

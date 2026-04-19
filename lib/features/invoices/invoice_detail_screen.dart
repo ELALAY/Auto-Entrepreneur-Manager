@@ -65,11 +65,13 @@ class InvoiceDetailScreen extends ConsumerWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.picture_as_pdf_outlined),
-                onPressed: () => _exportPdf(
-                  context,
-                  inv,
-                  profileAsync.valueOrNull,
-                ),
+                onPressed: () async {
+                  final uid = FirebaseAuth.instance.currentUser?.uid;
+                  if (uid == null) return;
+                  final fresh =
+                      await ref.read(profileRepositoryProvider).getProfile(uid);
+                  await _exportPdf(context, inv, fresh);
+                },
               ),
             ],
           ),

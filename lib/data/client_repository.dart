@@ -73,31 +73,6 @@ class ClientRepository {
   }
 
   InvoiceSummary _invoiceSummaryFromDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data();
-    final ts = data['issueDate'];
-    DateTime issueDate;
-    if (ts is Timestamp) {
-      issueDate = ts.toDate();
-    } else {
-      issueDate = DateTime.fromMillisecondsSinceEpoch(0);
-    }
-    final dts = data['dueDate'];
-    DateTime dueDate;
-    if (dts is Timestamp) {
-      dueDate = dts.toDate();
-    } else {
-      dueDate = issueDate;
-    }
-    return InvoiceSummary(
-      id: doc.id,
-      number: data['number'] as String? ?? doc.id,
-      issueDate: issueDate,
-      dueDate: dueDate,
-      status: data['status'] as String? ?? 'draft',
-      clientId: data['clientId'] as String? ?? '',
-      clientName: data['clientName'] as String? ?? '',
-      total: (data['total'] as num?)?.toDouble() ?? 0,
-      paidTotal: (data['paidTotal'] as num?)?.toDouble() ?? 0,
-    );
+    return InvoiceSummary.fromFirestoreDoc(doc.id, doc.data());
   }
 }

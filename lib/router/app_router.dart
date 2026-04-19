@@ -16,6 +16,7 @@ import '../features/invoices/invoice_detail_screen.dart';
 import '../features/invoices/invoice_form_screen.dart';
 import '../features/invoices/invoice_list_screen.dart';
 import '../features/more/more_screen.dart';
+import '../features/services/catalog_item_form_screen.dart';
 import '../features/onboarding/activity_onboarding_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/services/service_catalog_screen.dart';
@@ -180,6 +181,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'services',
                     builder: (context, state) => const ServiceCatalogScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'add',
+                        builder: (context, state) =>
+                            const CatalogItemFormScreen(),
+                      ),
+                      GoRoute(
+                        path: ':itemId/edit',
+                        builder: (context, state) => CatalogItemFormScreen(
+                          itemId: state.pathParameters['itemId']!,
+                        ),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'profile',
