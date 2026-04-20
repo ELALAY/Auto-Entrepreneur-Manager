@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/firebase_providers.dart';
+import '../domain/tax/activity_category.dart';
 import '../models/declaration.dart';
 import '../domain/tax/tax_rates_config.dart';
 import '../providers/auth_provider.dart';
+import 'profile_providers.dart';
 
 export '../utils/declaration_filing_deadline.dart' show declarationPeriodKey;
 
@@ -45,4 +47,25 @@ final quarterPaidRevenueProvider =
   final quarter = int.tryParse(parts[1]);
   if (year == null || quarter == null) return 0;
   return ref.watch(invoiceRepositoryProvider).sumPaidRevenueInQuarter(uid, year, quarter);
+});
+
+/// Cash-basis revenue in the quarter grouped by invoice activity (IR split).
+final quarterPaidRevenueByActivityProvider =
+    FutureProvider.autoDispose.family<Map<ActivityCategory, double>, String>(
+        (ref, periodKey) async {
+  final uid = ref.watch(authStateProvider).valueOrNull?.uid;
+  if (uid == null) return {};
+  final parts = periodKey.split('-');
+  if (parts.length != 2) return {};
+  final year = int.tryParse(parts[0]);
+  final quarter = int.tryParse(parts[1]);
+  if (year == null || quarter == null) return {};
+  final profile = ref.watch(userProfileStreamProvider).valueOrNull;
+  final fallback = profile?.activityCategory ?? ActivityCategory.commercial;
+  return ref.read(invoiceRepositoryProvider).sumPaidRevenueByActivityInQuarter(
+        uid,
+        year,
+        quarter,
+        fallback,
+      );
 });

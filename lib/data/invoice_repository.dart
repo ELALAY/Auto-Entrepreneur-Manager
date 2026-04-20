@@ -172,6 +172,34 @@ class InvoiceRepository {
     return sum;
   }
 
+  /// Cash-basis revenue in the quarter, grouped by invoice [activityCategory].
+  /// Invoices without a stored category use [legacyFallback].
+  Future<Map<ActivityCategory, double>> sumPaidRevenueByActivityInQuarter(
+    String uid,
+    int year,
+    int quarter,
+    ActivityCategory legacyFallback,
+  ) async {
+    final invSnap = await _invoices(uid).get();
+    final map = <ActivityCategory, double>{};
+    for (final inv in invSnap.docs) {
+      final data = inv.data();
+      final cat = parseActivityCategoryField(data['activityCategory']) ??
+          legacyFallback;
+      final paySnap = await _payments(uid, inv.id).get();
+      for (final p in paySnap.docs) {
+        final ts = p.data()['date'];
+        if (ts is! Timestamp) continue;
+        final date = ts.toDate();
+        if (dateOnlyInQuarter(date, year, quarter)) {
+          final amt = (p.data()['amount'] as num?)?.toDouble() ?? 0;
+          map[cat] = (map[cat] ?? 0) + amt;
+        }
+      }
+    }
+    return map;
+  }
+
   /// Assigns a per-calendar-year sequential number and formats it; returns new invoice id.
   ///
   /// Invoice number formatting is read from `users/{uid}` inside this transaction so it
@@ -202,7 +230,7 @@ class InvoiceRepository {
     String? numberOverride,
     String? templateId,
     String? notes,
-    ActivityCategory? activityCategory,
+    required ActivityCategory activityCategory,
   }) async {
     final ref = _invoices(uid).doc();
     final id = ref.id;
@@ -285,7 +313,7 @@ class InvoiceRepository {
         'signatureEnabled': signatureEnabled,
         'templateId': templateId,
         'notes': notes,
-        if (activityCategory != null) 'activityCategory': activityCategory.name,
+        'activityCategory': activityCategory.name,
         'total': total,
         'paidTotal': 0.0,
         ..._newInvoiceLogoFields(

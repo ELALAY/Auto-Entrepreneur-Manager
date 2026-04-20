@@ -5,9 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../data/firebase_providers.dart';
 import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/user_profile.dart' show normalizeActivityCategories;
 import '../../providers/auth_provider.dart';
 
-/// Post sign-up: user picks activity category with plain-language explanations (DECL-01).
+/// Post sign-up: user picks activity categories with plain-language explanations (DECL-01).
 class ActivityOnboardingScreen extends ConsumerStatefulWidget {
   const ActivityOnboardingScreen({super.key});
 
@@ -17,8 +18,21 @@ class ActivityOnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScreen> {
-  ActivityCategory _selected = ActivityCategory.commercial;
+  final Set<ActivityCategory> _selected = {ActivityCategory.commercial};
   bool _loading = false;
+
+  String _shortLabel(AppLocalizations l10n, ActivityCategory c) {
+    switch (c) {
+      case ActivityCategory.commercial:
+        return l10n.activityCommercialShort;
+      case ActivityCategory.artisanal:
+        return l10n.activityArtisanalShort;
+      case ActivityCategory.liberal:
+        return l10n.activityLiberalShort;
+      case ActivityCategory.services:
+        return l10n.activityServicesShort;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,37 +58,52 @@ class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScr
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.profileActivityCategoriesHint,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 24),
-            SegmentedButton<ActivityCategory>(
-              segments: [
-                ButtonSegment(
-                  value: ActivityCategory.commercial,
-                  label: Text(l10n.activityCommercialShort),
-                ),
-                ButtonSegment(
-                  value: ActivityCategory.artisanal,
-                  label: Text(l10n.activityArtisanalShort),
-                ),
-                ButtonSegment(
-                  value: ActivityCategory.liberal,
-                  label: Text(l10n.activityLiberalShort),
-                ),
-                ButtonSegment(
-                  value: ActivityCategory.services,
-                  label: Text(l10n.activityServicesShort),
-                ),
-              ],
-              selected: {_selected},
-              onSelectionChanged: (s) {
-                setState(() => _selected = s.first);
-              },
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ActivityCategory.values.map((c) {
+                final sel = _selected.contains(c);
+                return FilterChip(
+                  label: Text(_shortLabel(l10n, c)),
+                  selected: sel,
+                  showCheckmark: true,
+                  onSelected: (_) {
+                    setState(() {
+                      if (sel) {
+                        if (_selected.length > 1) _selected.remove(c);
+                      } else {
+                        _selected.add(c);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
             ),
             const SizedBox(height: 20),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: _ActivityExplainer(category: _selected),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: ActivityCategory.values
+                  .where(_selected.contains)
+                  .map(
+                    (c) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: _ActivityExplainer(category: c),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 28),
             FilledButton(
@@ -94,19 +123,29 @@ class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScr
   }
 
   Future<void> _save(BuildContext context, String uid) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (_selected.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileActivityCategoriesRequired)),
+      );
+      return;
+    }
     setState(() => _loading = true);
     try {
-      await ref.read(profileRepositoryProvider).saveActivityCategory(uid, _selected);
+      await ref.read(profileRepositoryProvider).saveActivityCategories(
+            uid,
+            normalizeActivityCategories(_selected).toList(),
+          );
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.onboardingSaved)),
+        SnackBar(content: Text(l10n.onboardingSaved)),
       );
       context.go('/dashboard');
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.onboardingError),
+            content: Text(l10n.onboardingError),
             backgroundColor: Colors.red.shade700,
           ),
         );

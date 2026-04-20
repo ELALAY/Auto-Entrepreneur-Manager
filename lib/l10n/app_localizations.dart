@@ -496,6 +496,12 @@ abstract class AppLocalizations {
   /// **'Type'**
   String get catalogFieldKind;
 
+  /// No description provided for @catalogFieldActivityCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax activity'**
+  String get catalogFieldActivityCategory;
+
   /// No description provided for @catalogFieldDescription.
   ///
   /// In en, this message translates to:
@@ -745,8 +751,20 @@ abstract class AppLocalizations {
   /// No description provided for @profileSectionActivity.
   ///
   /// In en, this message translates to:
-  /// **'Activity category'**
+  /// **'Activity categories'**
   String get profileSectionActivity;
+
+  /// No description provided for @profileActivityCategoriesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select every activity type you are registered for. Invoice and declaration tax rates depend on these.'**
+  String get profileActivityCategoriesHint;
+
+  /// No description provided for @profileActivityCategoriesRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one activity category.'**
+  String get profileActivityCategoriesRequired;
 
   /// No description provided for @activityCommercialShort.
   ///
@@ -1179,6 +1197,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notes'**
   String get invoiceFieldNotes;
+
+  /// No description provided for @invoiceActivitySectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity (tax)'**
+  String get invoiceActivitySectionTitle;
+
+  /// No description provided for @invoiceActivityMixedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog lines on this invoice use different activity types. Only one activity is allowed per invoice.'**
+  String get invoiceActivityMixedError;
+
+  /// No description provided for @invoiceActivityAutoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity (from catalog lines)'**
+  String get invoiceActivityAutoTitle;
+
+  /// No description provided for @invoiceActivityManualLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity for this invoice'**
+  String get invoiceActivityManualLabel;
 
   /// No description provided for @invoiceLineItems.
   ///

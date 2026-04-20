@@ -41,7 +41,7 @@ void main() {
       ice: 'ICE999',
       ifNumber: 'IF888',
       cnssNumber: 'CNSS1',
-      activityCategory: ActivityCategory.liberal,
+      activityCategories: [ActivityCategory.liberal],
       address: 'Rabat',
       brandLogos: [],
       branding: BrandingConfig(accentColorArgb: 0xFF00695C), taxProfessionnelle: '32546', phone: '+1234567890',

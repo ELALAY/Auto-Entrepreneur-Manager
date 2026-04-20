@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/firebase_providers.dart';
-import '../../domain/tax/activity_category.dart';
 import '../../domain/tax/tax_calculator.dart';
 import '../../domain/tax/tax_rates_config.dart';
 import '../../l10n/app_localizations.dart';
@@ -42,7 +41,9 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
 
   Future<void> _onRefresh() async {
     ref.invalidate(quarterPaidRevenueProvider(_periodKey));
+    ref.invalidate(quarterPaidRevenueByActivityProvider(_periodKey));
     await ref.read(quarterPaidRevenueProvider(_periodKey).future);
+    await ref.read(quarterPaidRevenueByActivityProvider(_periodKey).future);
   }
 
   Future<void> _saveDeclaration({
@@ -126,7 +127,8 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
     final dateFmt = DateFormat.yMMMd(locale);
 
     final taxRatesAsync = ref.watch(taxRatesStreamProvider);
-    final revenueAsync = ref.watch(quarterPaidRevenueProvider(_periodKey));
+    final revenueByActivityAsync =
+        ref.watch(quarterPaidRevenueByActivityProvider(_periodKey));
     final savedAsync = ref.watch(declarationForPeriodStreamProvider(_periodKey));
     final profileAsync = ref.watch(userProfileStreamProvider);
     final uid = ref.watch(authStateProvider).valueOrNull?.uid;
@@ -149,19 +151,21 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
                   ),
                   error: (_, __) => Text(l10n.declLoadError),
                   data: (rates) {
-                    return revenueAsync.when(
+                    return revenueByActivityAsync.when(
                       loading: () => const Padding(
                         padding: EdgeInsets.all(48),
                         child: Center(child: CircularProgressIndicator()),
                       ),
                       error: (_, __) => Text(l10n.declLoadError),
-                      data: (revenue) {
+                      data: (revenueByActivity) {
                         final profile = profileAsync.valueOrNull;
-                        final category = profile?.activityCategory ??
-                            ActivityCategory.commercial;
-                        final computation = computeQuarterlyTax(
-                          totalRevenue: revenue,
-                          category: category,
+                        final totalRevenue = revenueByActivity.values.fold<double>(
+                          0,
+                          (a, b) => a + b,
+                        );
+                        final computation = computeQuarterlyTaxFromActivityRevenues(
+                          revenueByCategory: revenueByActivity,
+                          totalRevenueForCnss: totalRevenue,
                           rates: rates,
                           hasCnss: profile?.hasCnss ?? false,
                         );

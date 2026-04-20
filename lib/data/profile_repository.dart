@@ -36,14 +36,23 @@ class ProfileRepository {
   }
 
   /// Merge-only update for post sign-up onboarding (does not clear other profile fields).
-  Future<void> saveActivityCategory(String uid, ActivityCategory category) {
+  Future<void> saveActivityCategories(
+    String uid,
+    List<ActivityCategory> categories,
+  ) {
+    final normalized = normalizeActivityCategories(categories);
     return _userDoc(uid).set(
       {
-        'activityCategory': category.name,
+        'activityCategories': normalized.map((e) => e.name).toList(),
+        'activityCategory': normalized.first.name,
         'updatedAt': FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
     );
+  }
+
+  Future<void> saveActivityCategory(String uid, ActivityCategory category) {
+    return saveActivityCategories(uid, [category]);
   }
 
   Future<void> saveProfile(UserProfile profile) {
@@ -112,11 +121,7 @@ class ProfileRepository {
   }
 
   UserProfile _profileFromMap(String uid, Map<String, dynamic> data) {
-    final categoryName = data['activityCategory'] as String? ?? 'commercial';
-    final category = ActivityCategory.values.firstWhere(
-      (e) => e.name == categoryName,
-      orElse: () => ActivityCategory.commercial,
-    );
+    final activityCategories = _activityCategoriesFromData(data);
     final accent = data['brandingAccentArgb'];
     final template = data['brandingTemplateId'] as String?;
     final invPrefix = data['invoiceNumberPrefix'] as String? ?? 'INV';
@@ -132,7 +137,7 @@ class ProfileRepository {
       cnssNumber: data['cnssNumber'] as String? ?? '',
       taxProfessionnelle: data['taxProfessionnelle'] as String? ?? '',
       phone: data['phone'] as String? ?? '',
-      activityCategory: category,
+      activityCategories: activityCategories,
       hasCnss: data['hasCnss'] as bool? ?? false,
       address: data['address'] as String? ?? '',
       brandLogos: _brandLogosFromData(data),
@@ -148,6 +153,32 @@ class ProfileRepository {
       ),
       nextInvoiceCount: _nextInvoiceCountFromFirestore(data),
     );
+  }
+
+  List<ActivityCategory> _activityCategoriesFromData(Map<String, dynamic> data) {
+    final raw = data['activityCategories'];
+    final out = <ActivityCategory>[];
+    final seen = <ActivityCategory>{};
+    if (raw is List) {
+      for (final e in raw) {
+        if (e is! String) continue;
+        for (final v in ActivityCategory.values) {
+          if (v.name == e && seen.add(v)) {
+            out.add(v);
+            break;
+          }
+        }
+      }
+    }
+    if (out.isEmpty) {
+      final legacyName = data['activityCategory'] as String? ?? 'commercial';
+      final legacy = ActivityCategory.values.firstWhere(
+        (e) => e.name == legacyName,
+        orElse: () => ActivityCategory.commercial,
+      );
+      return [legacy];
+    }
+    return out;
   }
 
   /// Reads [nextInvoiceCount] or migrates legacy [nextInvoiceNumber] string.
@@ -177,6 +208,10 @@ class ProfileRepository {
       'cnssNumber': p.cnssNumber.trim(),
       'taxProfessionnelle': p.taxProfessionnelle.trim(),
       'phone': p.phone.trim(),
+      'activityCategories':
+          normalizeActivityCategories(p.activityCategories)
+              .map((e) => e.name)
+              .toList(),
       'activityCategory': p.activityCategory.name,
       'hasCnss': p.hasCnss,
       'address': p.address.trim(),

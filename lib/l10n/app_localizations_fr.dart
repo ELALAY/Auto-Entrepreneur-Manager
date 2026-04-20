@@ -246,6 +246,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get catalogFieldKind => 'Type';
 
   @override
+  String get catalogFieldActivityCategory => 'Activité (fiscalité)';
+
+  @override
   String get catalogFieldDescription => 'Description (ligne de facture)';
 
   @override
@@ -379,7 +382,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le format doit inclure le jeton count (entre accolades) pour un numéro séquentiel unique par année.';
 
   @override
-  String get profileSectionActivity => 'Catégorie d\'activité';
+  String get profileSectionActivity => 'Catégories d\'activité';
+
+  @override
+  String get profileActivityCategoriesHint =>
+      'Sélectionnez chaque type d\'activité pour lequel vous êtes immatriculé. Les taux pour les factures et les déclarations en dépendent.';
+
+  @override
+  String get profileActivityCategoriesRequired =>
+      'Sélectionnez au moins une catégorie d\'activité.';
 
   @override
   String get activityCommercialShort => 'Commerce';
@@ -611,6 +622,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get invoiceFieldNotes => 'Notes';
+
+  @override
+  String get invoiceActivitySectionTitle => 'Activité (fiscalité)';
+
+  @override
+  String get invoiceActivityMixedError =>
+      'Les lignes catalogue de cette facture correspondent à plusieurs types d\'activité. Une seule activité par facture.';
+
+  @override
+  String get invoiceActivityAutoTitle => 'Activité (via lignes catalogue)';
+
+  @override
+  String get invoiceActivityManualLabel => 'Activité pour cette facture';
 
   @override
   String get invoiceLineItems => 'Lignes';

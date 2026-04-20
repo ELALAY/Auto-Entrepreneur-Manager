@@ -16,7 +16,7 @@ void main() {
       ice: 'ICE',
       ifNumber: 'IF',
       cnssNumber: 'CNSS',
-      activityCategory: ActivityCategory.commercial,
+      activityCategories: [ActivityCategory.commercial],
       address: 'Addr', taxProfessionnelle: '32546', phone: '+1234567890',
     );
     expect(isProfileComplete(p), false);
@@ -30,7 +30,7 @@ void main() {
       ice: '001234567000089',
       ifNumber: '12345678',
       cnssNumber: '1234567',
-      activityCategory: ActivityCategory.liberal,
+      activityCategories: [ActivityCategory.liberal],
       address: 'Casablanca', taxProfessionnelle: '32546', phone: '+1234567890',
     );
     expect(isProfileComplete(p), true);

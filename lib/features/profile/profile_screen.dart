@@ -12,7 +12,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/brand_logo.dart';
 import '../../models/branding_config.dart';
 import '../../models/invoice_number_config.dart';
-import '../../models/user_profile.dart';
+import '../../models/user_profile.dart' show UserProfile, normalizeActivityCategories;
 import '../../providers/profile_providers.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -39,7 +39,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _nextInvoiceCountFocus = FocusNode();
 
   late final SignatureController _signatureController;
-  ActivityCategory _category = ActivityCategory.commercial;
+  final Set<ActivityCategory> _selectedActivities = {
+    ActivityCategory.commercial,
+  };
   bool _hasCnss = false;
   Color? _accentColor;
   String _templateId = 'default';
@@ -89,7 +91,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _taxProfessionnelle.text = p.taxProfessionnelle;
     _phone.text = p.phone;
     _address.text = p.address;
-    _category = p.activityCategory;
+    _selectedActivities
+      ..clear()
+      ..addAll(p.activityCategories);
     _hasCnss = p.hasCnss;
     _brandLogos = List<BrandLogo>.from(p.brandLogos);
     _signatureUrl = p.signatureUrl;
@@ -130,7 +134,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       cnssNumber: _cnss.text,
       taxProfessionnelle: _taxProfessionnelle.text,
       phone: _phone.text,
-      activityCategory: _category,
+      activityCategories: normalizeActivityCategories(_selectedActivities),
       hasCnss: _hasCnss,
       address: _address.text,
       brandLogos: _brandLogos,
@@ -151,6 +155,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         return int.tryParse(t);
       }(),
     );
+  }
+
+  String _activityShortLabel(AppLocalizations l10n, ActivityCategory c) {
+    switch (c) {
+      case ActivityCategory.commercial:
+        return l10n.activityCommercialShort;
+      case ActivityCategory.artisanal:
+        return l10n.activityArtisanalShort;
+      case ActivityCategory.liberal:
+        return l10n.activityLiberalShort;
+      case ActivityCategory.services:
+        return l10n.activityServicesShort;
+    }
   }
 
   String _previewInvoiceNumber() {
@@ -188,6 +205,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         );
         return;
       }
+    }
+    if (_selectedActivities.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profileActivityCategoriesRequired)),
+      );
+      return;
     }
     setState(() => _saving = true);
     try {
@@ -560,33 +583,55 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const SizedBox(height: 24),
           Text(l10n.profileSectionActivity, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          SegmentedButton<ActivityCategory>(
-            segments: [
-              ButtonSegment(
-                value: ActivityCategory.commercial,
-                label: Text(l10n.activityCommercialShort),
-              ),
-              ButtonSegment(
-                value: ActivityCategory.artisanal,
-                label: Text(l10n.activityArtisanalShort),
-              ),
-              ButtonSegment(
-                value: ActivityCategory.liberal,
-                label: Text(l10n.activityLiberalShort),
-              ),
-              ButtonSegment(
-                value: ActivityCategory.services,
-                label: Text(l10n.activityServicesShort),
-              ),
-            ],
-            selected: {_category},
-            onSelectionChanged: (s) {
-              setState(() => _category = s.first);
-            },
+          const SizedBox(height: 4),
+          Text(
+            l10n.profileActivityCategoriesHint,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: 8),
-          _ActivityExplainer(category: _category),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ActivityCategory.values.map((c) {
+              final selected = _selectedActivities.contains(c);
+              return FilterChip(
+                label: Text(_activityShortLabel(l10n, c)),
+                selected: selected,
+                showCheckmark: true,
+                onSelected: (_) {
+                  setState(() {
+                    if (selected) {
+                      if (_selectedActivities.length > 1) {
+                        _selectedActivities.remove(c);
+                      }
+                    } else {
+                      _selectedActivities.add(c);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: ActivityCategory.values
+                .where(_selectedActivities.contains)
+                .map(
+                  (c) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: _ActivityExplainer(category: c),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
           const SizedBox(height: 16),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,

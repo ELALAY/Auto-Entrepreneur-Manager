@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/firebase_providers.dart';
+import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/catalog_item.dart';
 import '../../models/client.dart';
 import '../../models/enums.dart';
 import '../../models/invoice.dart';
 import '../../models/invoice_item.dart';
-import '../../models/user_profile.dart';
+import '../../models/user_profile.dart' show UserProfile, normalizeActivityCategories;
 import '../../providers/catalog_providers.dart';
 import '../../providers/client_providers.dart';
 import '../../providers/invoice_providers.dart';
@@ -56,6 +57,7 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
   /// Last preview from [InvoiceRepository.previewNextInvoiceNumber] (create flow only).
   String? _suggestedInvoiceNumber;
   String _invoiceLogoChoice = _invoiceLogoBundledSentinel;
+  ActivityCategory _manualActivity = ActivityCategory.commercial;
 
   bool get _isEdit => widget.invoiceId != null;
 
@@ -131,6 +133,8 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
     _signatureEnabled = inv.signatureEnabled;
     _notes.text = inv.notes ?? '';
     _invoiceNumber.text = inv.number;
+    _manualActivity =
+        inv.activityCategory ?? ActivityCategory.commercial;
     final profile = ref.read(userProfileStreamProvider).valueOrNull;
     if (inv.invoiceUseBundledLogo == true) {
       _invoiceLogoChoice = _invoiceLogoBundledSentinel;
@@ -286,6 +290,121 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
     }
   }
 
+  List<ActivityCategory> _profileActivityChoices(UserProfile? profile) {
+    if (profile != null && profile.activityCategories.isNotEmpty) {
+      return normalizeActivityCategories(profile.activityCategories);
+    }
+    return ActivityCategory.values.toList();
+  }
+
+  Set<ActivityCategory> _catalogActivitySet(List<CatalogItem> catalog) {
+    final byId = {for (final c in catalog) c.id: c};
+    final out = <ActivityCategory>{};
+    for (final line in _lines) {
+      final id = line.catalogItemId;
+      if (id == null) continue;
+      final item = byId[id];
+      if (item != null) out.add(item.activityCategory);
+    }
+    return out;
+  }
+
+  ActivityCategory? _resolveActivityForSave(
+    UserProfile? profile,
+    List<CatalogItem> catalog,
+  ) {
+    final cats = _catalogActivitySet(catalog);
+    if (cats.length > 1) return null;
+    if (cats.length == 1) return cats.first;
+    final choices = _profileActivityChoices(profile);
+    final m =
+        choices.contains(_manualActivity) ? _manualActivity : choices.first;
+    return m;
+  }
+
+  String _activityCategoryLabel(AppLocalizations l10n, ActivityCategory c) {
+    switch (c) {
+      case ActivityCategory.commercial:
+        return l10n.activityCommercialShort;
+      case ActivityCategory.artisanal:
+        return l10n.activityArtisanalShort;
+      case ActivityCategory.liberal:
+        return l10n.activityLiberalShort;
+      case ActivityCategory.services:
+        return l10n.activityServicesShort;
+    }
+  }
+
+  Widget _buildInvoiceActivitySection(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+    UserProfile? profile,
+    List<CatalogItem> catalog,
+  ) {
+    final catSet = _catalogActivitySet(catalog);
+    if (catSet.length > 1) {
+      return Card(
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.35),
+        child: ListTile(
+          leading: Icon(
+            Icons.warning_amber_rounded,
+            color: theme.colorScheme.error,
+          ),
+          title: Text(l10n.invoiceActivityMixedError),
+        ),
+      );
+    }
+    if (catSet.length == 1) {
+      final c = catSet.first;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.invoiceActivitySectionTitle,
+            style: theme.textTheme.titleSmall,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.invoiceActivityAutoTitle),
+            subtitle: Text(_activityCategoryLabel(l10n, c)),
+          ),
+        ],
+      );
+    }
+    final choices = _profileActivityChoices(profile);
+    final effective =
+        choices.contains(_manualActivity) ? _manualActivity : choices.first;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.invoiceActivitySectionTitle,
+          style: theme.textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<ActivityCategory>(
+          value: effective,
+          decoration: InputDecoration(
+            labelText: l10n.invoiceActivityManualLabel,
+            border: const OutlineInputBorder(),
+          ),
+          items: choices
+              .map(
+                (c) => DropdownMenuItem(
+                  value: c,
+                  child: Text(_activityCategoryLabel(l10n, c)),
+                ),
+              )
+              .toList(),
+          onChanged: (v) {
+            if (v != null) setState(() => _manualActivity = v);
+          },
+        ),
+      ],
+    );
+  }
+
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -310,7 +429,17 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
     setState(() => _saving = true);
     try {
       final profile = ref.read(userProfileStreamProvider).valueOrNull;
-      final activitySnapshot = profile?.activityCategory;
+      final catalog =
+          ref.read(catalogItemsStreamProvider).valueOrNull ?? [];
+      final resolvedActivity = _resolveActivityForSave(profile, catalog);
+      if (resolvedActivity == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.invoiceActivityMixedError)),
+          );
+        }
+        return;
+      }
       if (_isEdit) {
         final id = widget.invoiceId!;
         final existing = ref.read(invoiceStreamProvider(id)).valueOrNull;
@@ -335,7 +464,7 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
           signatureEnabled: _signatureEnabled,
           notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
           paidTotal: existing.paidTotal,
-          activityCategory: existing.activityCategory ?? activitySnapshot,
+          activityCategory: resolvedActivity,
           invoiceUseBundledLogo: useBundled,
           invoiceLogoUrl: useBundled ? null : logoChoice,
         );
@@ -365,7 +494,7 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
               invoiceLogoUrl: useBundled ? null : logoChoice,
               numberOverride: numberOverride,
               notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
-              activityCategory: activitySnapshot,
+              activityCategory: resolvedActivity,
             );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -451,6 +580,9 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
         error: (_, __) => Center(child: Text(l10n.clientListError)),
         data: (clients) {
           final profile = ref.watch(userProfileStreamProvider).valueOrNull;
+          final catalog =
+              ref.watch(catalogItemsStreamProvider).valueOrNull ?? [];
+          final theme = Theme.of(context);
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -502,6 +634,14 @@ class _InvoiceFormScreenState extends ConsumerState<InvoiceFormScreen> {
                     )
                     .toList(),
                 onChanged: (v) => setState(() => _clientId = v),
+              ),
+              const SizedBox(height: 12),
+              _buildInvoiceActivitySection(
+                context,
+                l10n,
+                theme,
+                profile,
+                catalog,
               ),
               const SizedBox(height: 12),
               ListTile(

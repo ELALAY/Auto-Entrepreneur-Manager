@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/firebase_providers.dart';
+import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/catalog_item.dart';
 import '../../providers/catalog_providers.dart';
+import '../../providers/profile_providers.dart';
 
 /// Create (`itemId == null`) or edit an existing catalog entry.
 class CatalogItemFormScreen extends ConsumerStatefulWidget {
@@ -24,6 +26,7 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
   final _description = TextEditingController();
   final _unitPrice = TextEditingController();
   CatalogKind _kind = CatalogKind.service;
+  ActivityCategory _activityCategory = ActivityCategory.commercial;
 
   bool _synced = false;
   bool _saving = false;
@@ -54,6 +57,7 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
     _description.text = item.description;
     _unitPrice.text = item.defaultUnitPrice.toString();
     _kind = item.kind;
+    _activityCategory = item.activityCategory;
   }
 
   Future<void> _save() async {
@@ -74,6 +78,7 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
       description: _description.text.trim(),
       defaultUnitPrice: price,
       kind: _kind,
+      activityCategory: _activityCategory,
     );
 
     setState(() => _saving = true);
@@ -191,6 +196,11 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
   }
 
   Widget _formScaffold(BuildContext context, AppLocalizations l10n) {
+    final profile = ref.watch(userProfileStreamProvider).valueOrNull;
+    final activityChoices = profile != null && profile.activityCategories.isNotEmpty
+        ? profile.activityCategories
+        : ActivityCategory.values.toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit ? l10n.catalogEditTitle : l10n.catalogAddTitle),
@@ -227,6 +237,29 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
                   ? null
                   : (v) {
                       if (v != null) setState(() => _kind = v);
+                    },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<ActivityCategory>(
+              value: activityChoices.contains(_activityCategory)
+                  ? _activityCategory
+                  : activityChoices.first,
+              decoration: InputDecoration(
+                labelText: l10n.catalogFieldActivityCategory,
+                border: const OutlineInputBorder(),
+              ),
+              items: activityChoices
+                  .map(
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text(_activityLabel(l10n, c)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: _saving
+                  ? null
+                  : (v) {
+                      if (v != null) setState(() => _activityCategory = v);
                     },
             ),
             const SizedBox(height: 12),
@@ -276,5 +309,18 @@ class _CatalogItemFormScreenState extends ConsumerState<CatalogItemFormScreen> {
         ),
       ),
     );
+  }
+
+  String _activityLabel(AppLocalizations l10n, ActivityCategory c) {
+    switch (c) {
+      case ActivityCategory.commercial:
+        return l10n.activityCommercialShort;
+      case ActivityCategory.artisanal:
+        return l10n.activityArtisanalShort;
+      case ActivityCategory.liberal:
+        return l10n.activityLiberalShort;
+      case ActivityCategory.services:
+        return l10n.activityServicesShort;
+    }
   }
 }

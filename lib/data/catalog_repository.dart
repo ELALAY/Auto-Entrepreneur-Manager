@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../domain/tax/activity_category.dart';
 import '../models/catalog_item.dart';
 
 class CatalogRepository {
@@ -33,13 +34,27 @@ class CatalogRepository {
 
   CatalogItem _fromDoc(String uid, DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
+    final kind = _parseKind(data['kind'] as String?);
+    final ac = _parseActivityCategory(data['activityCategory'] as String?);
     return CatalogItem(
       id: doc.id,
       userId: uid,
       description: data['description'] as String? ?? '',
       defaultUnitPrice: (data['defaultUnitPrice'] as num?)?.toDouble() ?? 0,
-      kind: _parseKind(data['kind'] as String?),
+      kind: kind,
+      activityCategory: ac ??
+          (kind == CatalogKind.product
+              ? ActivityCategory.commercial
+              : ActivityCategory.services),
     );
+  }
+
+  ActivityCategory? _parseActivityCategory(String? s) {
+    if (s == null || s.isEmpty) return null;
+    for (final v in ActivityCategory.values) {
+      if (v.name == s) return v;
+    }
+    return null;
   }
 
   Map<String, dynamic> _toMap(CatalogItem item) {
@@ -47,6 +62,7 @@ class CatalogRepository {
       'description': item.description.trim(),
       'defaultUnitPrice': item.defaultUnitPrice,
       'kind': item.kind.name,
+      'activityCategory': item.activityCategory.name,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }

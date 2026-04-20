@@ -242,6 +242,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catalogFieldKind => 'Type';
 
   @override
+  String get catalogFieldActivityCategory => 'Tax activity';
+
+  @override
   String get catalogFieldDescription => 'Description (on invoice line)';
 
   @override
@@ -375,7 +378,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'The format must include the count token (in curly braces) so each invoice gets a unique yearly number.';
 
   @override
-  String get profileSectionActivity => 'Activity category';
+  String get profileSectionActivity => 'Activity categories';
+
+  @override
+  String get profileActivityCategoriesHint =>
+      'Select every activity type you are registered for. Invoice and declaration tax rates depend on these.';
+
+  @override
+  String get profileActivityCategoriesRequired =>
+      'Select at least one activity category.';
 
   @override
   String get activityCommercialShort => 'Commercial';
@@ -607,6 +618,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invoiceFieldNotes => 'Notes';
+
+  @override
+  String get invoiceActivitySectionTitle => 'Activity (tax)';
+
+  @override
+  String get invoiceActivityMixedError =>
+      'Catalog lines on this invoice use different activity types. Only one activity is allowed per invoice.';
+
+  @override
+  String get invoiceActivityAutoTitle => 'Activity (from catalog lines)';
+
+  @override
+  String get invoiceActivityManualLabel => 'Activity for this invoice';
 
   @override
   String get invoiceLineItems => 'Line items';

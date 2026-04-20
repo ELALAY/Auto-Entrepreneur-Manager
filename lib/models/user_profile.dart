@@ -3,6 +3,20 @@ import 'brand_logo.dart';
 import 'branding_config.dart';
 import 'invoice_number_config.dart';
 
+/// Dedupes [ActivityCategory] values preserving first-seen order.
+/// Returns `[ActivityCategory.commercial]` if [input] is empty.
+List<ActivityCategory> normalizeActivityCategories(
+  Iterable<ActivityCategory> input,
+) {
+  final seen = <ActivityCategory>{};
+  final out = <ActivityCategory>[];
+  for (final c in input) {
+    if (seen.add(c)) out.add(c);
+  }
+  if (out.isEmpty) return [ActivityCategory.commercial];
+  return out;
+}
+
 class UserProfile {
   const UserProfile({
     required this.uid,
@@ -13,8 +27,8 @@ class UserProfile {
     required this.cnssNumber,
     required this.taxProfessionnelle,
     required this.phone,
-    required this.activityCategory,
     required this.address,
+    this.activityCategories = const [ActivityCategory.commercial],
     this.hasCnss = false,
     this.brandLogos = const [],
     this.signatureUrl,
@@ -31,8 +45,15 @@ class UserProfile {
   final String cnssNumber;
   final String taxProfessionnelle;
   final String phone;
-  final ActivityCategory activityCategory;
   final String address;
+
+  /// Registered tax activity families (IR rates differ per category).
+  /// Non-empty; use [normalizeActivityCategories] when building from UI.
+  final List<ActivityCategory> activityCategories;
+
+  /// First registered activity (legacy single-selection behavior).
+  ActivityCategory get activityCategory =>
+      activityCategories.isEmpty ? ActivityCategory.commercial : activityCategories.first;
 
   /// True when the user already contributes to CNSS through another scheme
   /// (e.g. salaried employment). CNSS is then excluded from AE declarations.
@@ -58,8 +79,8 @@ class UserProfile {
     String? cnssNumber,
     String? taxProfessionnelle,
     String? phone,
-    ActivityCategory? activityCategory,
     String? address,
+    List<ActivityCategory>? activityCategories,
     bool? hasCnss,
     List<BrandLogo>? brandLogos,
     String? signatureUrl,
@@ -78,8 +99,9 @@ class UserProfile {
       cnssNumber: cnssNumber ?? this.cnssNumber,
       taxProfessionnelle: taxProfessionnelle ?? this.taxProfessionnelle,
       phone: phone ?? this.phone,
-      activityCategory: activityCategory ?? this.activityCategory,
       address: address ?? this.address,
+      activityCategories:
+          activityCategories ?? this.activityCategories,
       hasCnss: hasCnss ?? this.hasCnss,
       brandLogos: brandLogos ?? this.brandLogos,
       signatureUrl:
