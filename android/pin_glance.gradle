@@ -1,0 +1,32 @@
+// home_widget 0.9.x uses open ranges (glance 1.+, work 2.+).
+// Glance 1.3.0-alpha02 needs compileSdk 37 and AGP 9.1.
+// work-runtime 2.12.0 needs minSdk 24. Pin the latest releases that
+// still build with compileSdk 35, AGP 8.7, and minSdk 23.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "androidx.glance") {
+            details.useVersion("1.2.0")
+            details.because("Glance 1.3.0-alpha02 requires compileSdk 37 and AGP 9.1")
+        }
+        if (details.requested.group == "androidx.work") {
+            details.useVersion("2.11.2")
+            details.because("work-runtime 2.12.0 requires minSdk 24")
+        }
+    }
+}
+
+def raiseMinSdk = {
+    def androidExt = extensions.findByName("android")
+    if (androidExt == null) {
+        return
+    }
+    def current = androidExt.defaultConfig.minSdkVersion?.apiLevel ?: 1
+    if (current < 23) {
+        androidExt.defaultConfig.minSdkVersion 23
+    }
+}
+
+// evaluationDependsOn(":app") can evaluate a project before this script is
+// applied, and afterEvaluate is illegal at that point. withPlugin still runs.
+pluginManager.withPlugin("com.android.library", raiseMinSdk)
+pluginManager.withPlugin("com.android.application", raiseMinSdk)

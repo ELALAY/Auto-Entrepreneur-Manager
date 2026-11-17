@@ -16,6 +16,10 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    apply(from = rootProject.file("pin_glance.gradle"))
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
