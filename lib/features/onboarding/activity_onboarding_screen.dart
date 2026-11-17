@@ -7,6 +7,7 @@ import '../../domain/tax/activity_category.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/user_profile.dart' show normalizeActivityCategories;
 import '../../providers/auth_provider.dart';
+import '../../shortcuts/shortcut_inbox.dart';
 
 /// Post sign-up: user picks activity categories with plain-language explanations (DECL-01).
 class ActivityOnboardingScreen extends ConsumerStatefulWidget {
@@ -17,7 +18,8 @@ class ActivityOnboardingScreen extends ConsumerStatefulWidget {
       _ActivityOnboardingScreenState();
 }
 
-class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScreen> {
+class _ActivityOnboardingScreenState
+    extends ConsumerState<ActivityOnboardingScreen> {
   final Set<ActivityCategory> _selected = {ActivityCategory.commercial};
   bool _loading = false;
 
@@ -41,9 +43,7 @@ class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScr
     final uid = ref.watch(authStateProvider).valueOrNull?.uid;
 
     if (uid == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -132,15 +132,21 @@ class _ActivityOnboardingScreenState extends ConsumerState<ActivityOnboardingScr
     }
     setState(() => _loading = true);
     try {
-      await ref.read(profileRepositoryProvider).saveActivityCategories(
+      await ref
+          .read(profileRepositoryProvider)
+          .saveActivityCategories(
             uid,
             normalizeActivityCategories(_selected).toList(),
           );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.onboardingSaved)),
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.onboardingSaved)));
+      context.go(
+        ref.read(shortcutInboxProvider).pending != null
+            ? shortcutGatePath
+            : '/dashboard',
       );
-      context.go('/dashboard');
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -167,21 +173,21 @@ class _ActivityExplainer extends StatelessWidget {
     final theme = Theme.of(context);
     final (title, body) = switch (category) {
       ActivityCategory.commercial => (
-          l10n.activityCommercialTitle,
-          l10n.activityCommercialBody,
-        ),
+        l10n.activityCommercialTitle,
+        l10n.activityCommercialBody,
+      ),
       ActivityCategory.artisanal => (
-          l10n.activityArtisanalTitle,
-          l10n.activityArtisanalBody,
-        ),
+        l10n.activityArtisanalTitle,
+        l10n.activityArtisanalBody,
+      ),
       ActivityCategory.liberal => (
-          l10n.activityLiberalTitle,
-          l10n.activityLiberalBody,
-        ),
+        l10n.activityLiberalTitle,
+        l10n.activityLiberalBody,
+      ),
       ActivityCategory.services => (
-          l10n.activityServicesTitle,
-          l10n.activityServicesBody,
-        ),
+        l10n.activityServicesTitle,
+        l10n.activityServicesBody,
+      ),
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -127,6 +127,12 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 
 ## Traceability
 
+### Platform enhancement outside the original v1 counts
+
+- [x] **ANDROID-01**: Long-press Android app icon exposes **New Invoice**, stable ID `New Invoice`, with an invoice-plus icon. Cold and warm launches retain a pending navigation through sign-in/onboarding, wait for profile/client/catalog data, and consume it once before opening the existing invoice form. Missing data offers recovery; opening does not save an invoice. No new dependencies. Implementation and automated tests are complete; launcher/OEM/device checks remain open in the [verification report](verification/android-new-invoice-shortcut.md). Samsung Modes and Routines compatibility is not verified.
+
+### Original product requirements
+
 *Synced 2026-11-17 with the codebase. Pending: DASH-04 and DASH-05. Dashboard denormalized summaries remain an optional optimization (`06-01`).*
 
 | Requirement | Phase | Status |
@@ -192,4 +198,4 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 
 ---
 *Requirements defined: 2026-04-09*
-*Last updated: 2026-11-17 — DASH-06 and DASH-07 added for the quarter expense total and the estimated IR+CNSS card*
+*Last updated: 2026-11-17 — ANDROID-01 launcher shortcut added outside original product counts; DASH-06 and DASH-07 cover quarter expenses and estimated IR+CNSS.*

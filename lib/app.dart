@@ -48,8 +48,9 @@ class _AutoEntrepreneurAppState extends ConsumerState<AutoEntrepreneurApp> {
       // resumes the pending action at its normal authenticated landing point.
       if (path == '/login' ||
           path == '/sign-up' ||
-          path == '/onboarding/activity')
+          path == '/onboarding/activity') {
         return;
+      }
       router.go(shortcutGatePath);
     });
     WidgetsBinding.instance.ensureVisualUpdate();

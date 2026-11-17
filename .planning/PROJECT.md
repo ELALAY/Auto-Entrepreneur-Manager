@@ -129,9 +129,10 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 ### Also shipped (outside the original phase list)
 
 - Android home-screen widgets: new invoice, dashboard peek
-- On-device MCP connector (More → MCP) for local tool access
+- Android launcher shortcut: **New Invoice** (stable ID `New Invoice`) opens the invoice form after auth and prerequisite loading; no automatic save. Native cold/warm delivery and once-only consumption are implemented. Verified by 12 new tests, all 43 Flutter tests, clean relevant analysis, and an Android debug build. Device/OEM checks remain open; see [verification](verification/android-new-invoice-shortcut.md).
+- On-device MCP experiment is parked in Git stash `edbb5cb` and removed from the working app
 - Invoice list filters
 
 ---
 
-*Last updated: 2026-11-17 — dashboard shows quarter expenses and estimated IR+CNSS; ceiling alert and top clients still open*
+*Last updated: 2026-11-17 — Android New Invoice launcher shortcut implemented and automatically verified; real-device checks remain open. Dashboard ceiling alert and top clients still open.*

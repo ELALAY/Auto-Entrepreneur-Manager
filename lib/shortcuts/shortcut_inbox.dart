@@ -42,9 +42,7 @@ class ShortcutInbox extends ChangeNotifier {
 
 final shortcutInboxProvider = ChangeNotifierProvider((ref) => ShortcutInbox());
 
-/// Resume only at auth's existing landing points. Never override onboarding,
+/// Resume only at login's authenticated landing point. Never override onboarding,
 /// widget destinations, arbitrary deep links, or other feature routes.
 String? shortcutResumeRedirect({required String path, required bool pending}) =>
-    pending && (path == '/login' || path == '/dashboard')
-    ? shortcutGatePath
-    : null;
+    pending && path == '/login' ? shortcutGatePath : null;

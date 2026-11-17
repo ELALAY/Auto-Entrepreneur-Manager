@@ -127,7 +127,7 @@ void main() {
   test(
     'resume affects only auth landing points and preserves other navigation',
     () {
-      for (final path in ['/login', '/dashboard']) {
+      for (final path in ['/login']) {
         expect(
           shortcutResumeRedirect(path: path, pending: true),
           shortcutGatePath,
@@ -135,6 +135,7 @@ void main() {
         expect(shortcutResumeRedirect(path: path, pending: false), isNull);
       }
       for (final path in [
+        '/dashboard',
         '/sign-up',
         '/onboarding/activity',
         '/invoices/123',

@@ -87,6 +87,10 @@ class NewInvoiceShortcutGate extends ConsumerWidget {
           final uid = auth.requireValue!.uid;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!context.mounted) return;
+            if (GoRouter.of(context).routeInformationProvider.value.uri.path !=
+                shortcutGatePath) {
+              return;
+            }
             // Recheck after the frame: auth/data or the pending delivery may
             // have changed while this callback was waiting.
             final currentAuth = ref.read(authStateProvider);
@@ -103,8 +107,9 @@ class NewInvoiceShortcutGate extends ConsumerWidget {
                 currentClients.hasError ||
                 (currentClients.valueOrNull?.isEmpty ?? true) ||
                 currentCatalog.isLoading ||
-                currentCatalog.hasError)
+                currentCatalog.hasError) {
               return;
+            }
             if (ref.read(shortcutInboxProvider).consume(pending)) {
               context.go('/invoices/add');
             }

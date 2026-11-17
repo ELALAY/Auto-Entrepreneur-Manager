@@ -8,10 +8,12 @@ import 'package:auto_entrepreneur_manager/providers/auth_provider.dart';
 import 'package:auto_entrepreneur_manager/providers/catalog_providers.dart';
 import 'package:auto_entrepreneur_manager/providers/client_providers.dart';
 import 'package:auto_entrepreneur_manager/providers/profile_providers.dart';
+import 'package:auto_entrepreneur_manager/router/app_router.dart';
 import 'package:auto_entrepreneur_manager/shortcuts/new_invoice_shortcut_gate.dart';
 import 'package:auto_entrepreneur_manager/shortcuts/shortcut_inbox.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -44,6 +46,60 @@ const client = Client(
 );
 
 void main() {
+  testWidgets(
+    'real auth router retains a shortcut on login and resumes after sign-in',
+    (tester) async {
+      // Ahem's fixed-width glyphs overflow the existing login footer. Use the
+      // bundled real font so this tests navigation with realistic text metrics.
+      final font = FontLoader('ShortcutTestFont')
+        ..addFont(rootBundle.load('assets/fonts/OpenSans-Regular.ttf'));
+      await font.load();
+      final auth = StreamController<User?>();
+      addTearDown(auth.close);
+      final container = ProviderContainer(
+        overrides: [
+          authStateProvider.overrideWith((_) => auth.stream),
+          userProfileStreamProvider.overrideWith((_) => Stream.value(profile)),
+          clientsStreamProvider.overrideWith((_) => Stream.value([])),
+          catalogItemsStreamProvider.overrideWith((_) => Stream.value([])),
+        ],
+      );
+      addTearDown(container.dispose);
+      final router = container.read(routerProvider);
+      addTearDown(router.dispose);
+      router.go('/login');
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            routerConfig: router,
+            theme: ThemeData(fontFamily: 'ShortcutTestFont'),
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      auth.add(null);
+      await tester.pumpAndSettle();
+      container.read(shortcutInboxProvider).receive({
+        'deliveryId': 'signed-out-tap',
+        'shortcutId': 'New Invoice',
+      });
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, '/login');
+      expect(container.read(shortcutInboxProvider).pending, 'signed-out-tap');
+      auth.add(SignedInUser());
+      await tester.pumpAndSettle();
+      expect(router.routeInformationProvider.value.uri.path, shortcutGatePath);
+      expect(
+        find.textContaining('Add a client before creating'),
+        findsOneWidget,
+      );
+      expect(container.read(shortcutInboxProvider).pending, 'signed-out-tap');
+    },
+  );
+
   Future<({ProviderContainer container, GoRouter router})> mount(
     WidgetTester tester, {
     Stream<User?>? auth,
@@ -160,7 +216,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Empty invoice form'), findsNothing);
       expect(app.container.read(shortcutInboxProvider).pending, 'tap');
-      await tester.tap(find.widgetWithText(FilledButton, 'Go to profile'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Open profile'));
       await tester.pumpAndSettle();
       expect(
         app.router.routeInformationProvider.value.uri.path,

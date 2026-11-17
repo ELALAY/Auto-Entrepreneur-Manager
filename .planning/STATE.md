@@ -16,7 +16,9 @@ Plan: `06-03` revenue-ceiling alert, then `06-04` top clients. `06-01` (denormal
 
 Status: No technical blocker. Publish Firestore `config/taxRates` version 4 (`config/taxRates.firestore.json`) so production uses the remote IR bands instead of the bundled fallback.
 
-Last activity: 2026-11-17 — Dashboard shows this quarter's expenses and the estimated declaration (IR + CNSS) from the same calculator as the declaration screen.
+Last activity: 2026-11-17 — Implemented Android **New Invoice** launcher shortcut (ANDROID-01), with cold/warm delivery, pending auth resumption, prerequisite gate, and once-only navigation. Verification and remaining device checks: [shortcut report](verification/android-new-invoice-shortcut.md).
+
+Shortcut verification: 12 targeted tests and all 43 Flutter tests pass; relevant static analysis has no issues; Android debug APK builds successfully. Real-device launcher/OEM checks remain pending.
 
 Progress: [███████████] ~96% (ceiling alert and top clients outstanding)
 
@@ -58,6 +60,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
+- **Android device QA — ANDROID-01:** Launcher menu/icon, actual cold/warm delivery, email/Google sign-in, missing/offline data, existing widgets, and activity recreation. Samsung Modes and Routines is untested; no compatibility claim. See [manual checks and verification](verification/android-new-invoice-shortcut.md).
 - **Phase 6 — DASH-04:** Alert when year-to-date paid revenue is within 20% of the annual ceiling for the user's activity (commerce/artisanat 500,000 MAD, services 200,000 MAD — confirm current DGI ceilings before shipping).
 - **Phase 6 — DASH-05:** Top clients by paid revenue.
 - **Ops:** Replace the live Firestore `config/taxRates` document with version 4 (`cnssIrBands`). Documents that still use `cnssNil` / `cnssTo2500` are rejected.
@@ -72,6 +75,6 @@ Recent decisions affecting current work:
 
 Last session: 2026-11-17
 
-Stopped at: Planning sync. Next product work is the dashboard ceiling alert and top clients.
+Stopped at: Android launcher shortcut implementation and automated verification (see report). Next device work is shortcut QA; next product work remains the dashboard ceiling alert and top clients.
 
 Resume file: None

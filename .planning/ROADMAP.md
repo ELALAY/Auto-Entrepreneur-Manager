@@ -183,3 +183,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Expenses | 1/1 | Complete | 2026-11 (shipped) |
 | 5. Tax Declarations | 3/3 | Complete (CNSS formula corrected 2026-11-17) | 2026 |
 | 6. Dashboard | 2/5 | Partial (`06-02`, `06-05` shipped; `06-03` and `06-04` open; `06-01` optional) | — |
+
+## Platform enhancement — Android launcher shortcut (2026-11-17)
+
+- [x] **ANDROID-01:** Declare static **New Invoice** shortcut (ID `New Invoice`), route native cold/warm deliveries through a once-only pending action and the existing auth flow, and load invoice prerequisites before navigation. No automatic form submission or additional dependencies.
+- [x] Add delivery, duplicate/race, auth-router, prerequisite, retry, missing-data, and cancellation tests.
+- [x] Verify: 12 shortcut tests / 43 total Flutter tests pass, relevant analysis has no issues, Android debug build succeeds.
+- [ ] Complete real-device launcher and regression checks, including existing widgets; separately test Samsung Modes and Routines before claiming compatibility.
+
+Verification commands, results, limitations, and manual steps: [Android shortcut report](verification/android-new-invoice-shortcut.md). This enhancement does not change Phase 6's remaining dashboard scope.
