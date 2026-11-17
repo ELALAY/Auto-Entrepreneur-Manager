@@ -68,6 +68,25 @@
     }
   },
   "dashboardDeclarationBannerOpen": "Open declaration",
+  "dashboardQuickPeekIncomeLabel": "Cash in · Q{quarter} {year}",
+  "@dashboardQuickPeekIncomeLabel": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
+  "dashboardQuickPeekPendingLabel": "Pending to cash in",
+  "dashboardQuickPeekQuarterEndLabel": "Until quarter end",
+  "dashboardQuickPeekQuarterEndDays": "{days, plural, one{1 day left} other{{days} days left}}",
+  "@dashboardQuickPeekQuarterEndDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "dashboardQuickPeekQuarterEndToday": "Last day of quarter",
+  "dashboardQuickPeekQuarterEndPast": "Quarter ended",
+  "dashboardQuickPeekExpectedTaxLabel": "Est. declaration (IR+CNSS)",
+  "dashboardQuickPeekExpectedTaxFootnote": "Based on payments dated this quarter.",
   "moreSectionBusiness": "Business",
   "moreSectionAccount": "Account",
   "placeholderInvoices": "Create and manage invoices linked to clients.",
@@ -325,6 +344,47 @@
   "declYear": "Year",
   "declQuarter": "Quarter",
   "declGo": "Open",
+  "expenseFilterAll": "All",
+  "expenseFilterMonth": "Month",
+  "expenseFilterQuarter": "Quarter",
+  "expensePickMonthHint": "Month shown",
+  "expensePickQuarterHint": "Quarter shown",
+  "expensePeriodQuarter": "Q{quarter} {year}",
+  "@expensePeriodQuarter": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
+  "expenseFormAddTitle": "New expense",
+  "expenseFormEditTitle": "Edit expense",
+  "expenseSaved": "Expense saved.",
+  "expenseSaveError": "Could not save expense. Try again.",
+  "expenseDeleteConfirmTitle": "Delete expense?",
+  "expenseDeleteConfirmBody": "This removes the expense and deletes any attached receipt from storage.",
+  "expenseDeleted": "Expense deleted.",
+  "expenseDeleteError": "Could not delete. Try again.",
+  "expenseFieldAmount": "Amount (MAD)",
+  "expenseFieldDate": "Date",
+  "expenseFieldCategory": "Category",
+  "expenseFieldDescription": "Description",
+  "expenseFieldReceipt": "Receipt",
+  "expenseAttachReceipt": "Attach receipt",
+  "expenseReplaceReceipt": "Replace receipt",
+  "expenseRemoveReceipt": "Remove attachment",
+  "expenseAmountInvalid": "Enter a positive amount.",
+  "expenseEmptyAll": "No expenses yet.",
+  "expenseEmptyFiltered": "No expenses match this filter.",
+  "expensePeriodDialogTitle": "Quarter & year",
+  "expenseApply": "Apply",
+  "expenseCategoryOffice": "Office & supplies",
+  "expenseCategoryTravel": "Travel & transport",
+  "expenseCategoryTelecom": "Telecom & internet",
+  "expenseCategoryRent": "Rent & premises",
+  "expenseCategoryEquipment": "Equipment",
+  "expenseCategoryFees": "Professional fees",
+  "expenseCategoryMarketing": "Marketing",
+  "expenseCategoryOther": "Other",
   "onboardingActivityTitle": "Your activity type",
   "onboardingActivitySubtitle": "Choose the category that best describes your auto-entrepreneur activity. It sets which IR rate schedule applies.",
   "onboardingContinue": "Continue to app",

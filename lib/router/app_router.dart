@@ -11,6 +11,7 @@ import '../features/dashboard/dashboard_screen.dart';
 import '../features/declarations/declaration_detail_screen.dart';
 import '../features/declarations/declaration_list_screen.dart';
 import '../features/expenses/expense_detail_screen.dart';
+import '../features/expenses/expense_form_screen.dart';
 import '../features/expenses/expense_list_screen.dart';
 import '../features/invoices/invoice_detail_screen.dart';
 import '../features/invoices/invoice_form_screen.dart';
@@ -121,10 +122,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const ExpenseListScreen(),
                 routes: [
                   GoRoute(
+                    path: 'add',
+                    builder: (context, state) => const ExpenseFormScreen(),
+                  ),
+                  GoRoute(
                     path: ':id',
                     builder: (context, state) => ExpenseDetailScreen(
                       expenseId: state.pathParameters['id']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => ExpenseFormScreen(
+                          expenseId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

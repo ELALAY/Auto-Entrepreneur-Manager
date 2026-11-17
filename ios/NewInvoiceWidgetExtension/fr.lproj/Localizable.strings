@@ -1,0 +1,4 @@
+/* Home screen widget — strings match Android values */
+"widget_title" = "Creer Facture AE";
+"widget_display_name" = "Nouvelle facture AE";
+"widget_description" = "Créer une nouvelle facture";

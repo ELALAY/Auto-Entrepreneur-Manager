@@ -176,6 +176,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardDeclarationBannerOpen => 'Open declaration';
 
   @override
+  String dashboardQuickPeekIncomeLabel(int quarter, int year) {
+    return 'Cash in · Q$quarter $year';
+  }
+
+  @override
+  String get dashboardQuickPeekPendingLabel => 'Pending to cash in';
+
+  @override
+  String get dashboardQuickPeekQuarterEndLabel => 'Until quarter end';
+
+  @override
+  String dashboardQuickPeekQuarterEndDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days left',
+      one: '1 day left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashboardQuickPeekQuarterEndToday => 'Last day of quarter';
+
+  @override
+  String get dashboardQuickPeekQuarterEndPast => 'Quarter ended';
+
+  @override
+  String get dashboardQuickPeekExpectedTaxLabel => 'Est. declaration (IR+CNSS)';
+
+  @override
+  String get dashboardQuickPeekExpectedTaxFootnote =>
+      'Based on payments dated this quarter.';
+
+  @override
   String get moreSectionBusiness => 'Business';
 
   @override
@@ -936,6 +971,114 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get declGo => 'Open';
+
+  @override
+  String get expenseFilterAll => 'All';
+
+  @override
+  String get expenseFilterMonth => 'Month';
+
+  @override
+  String get expenseFilterQuarter => 'Quarter';
+
+  @override
+  String get expensePickMonthHint => 'Month shown';
+
+  @override
+  String get expensePickQuarterHint => 'Quarter shown';
+
+  @override
+  String expensePeriodQuarter(int quarter, int year) {
+    return 'Q$quarter $year';
+  }
+
+  @override
+  String get expenseFormAddTitle => 'New expense';
+
+  @override
+  String get expenseFormEditTitle => 'Edit expense';
+
+  @override
+  String get expenseSaved => 'Expense saved.';
+
+  @override
+  String get expenseSaveError => 'Could not save expense. Try again.';
+
+  @override
+  String get expenseDeleteConfirmTitle => 'Delete expense?';
+
+  @override
+  String get expenseDeleteConfirmBody =>
+      'This removes the expense and deletes any attached receipt from storage.';
+
+  @override
+  String get expenseDeleted => 'Expense deleted.';
+
+  @override
+  String get expenseDeleteError => 'Could not delete. Try again.';
+
+  @override
+  String get expenseFieldAmount => 'Amount (MAD)';
+
+  @override
+  String get expenseFieldDate => 'Date';
+
+  @override
+  String get expenseFieldCategory => 'Category';
+
+  @override
+  String get expenseFieldDescription => 'Description';
+
+  @override
+  String get expenseFieldReceipt => 'Receipt';
+
+  @override
+  String get expenseAttachReceipt => 'Attach receipt';
+
+  @override
+  String get expenseReplaceReceipt => 'Replace receipt';
+
+  @override
+  String get expenseRemoveReceipt => 'Remove attachment';
+
+  @override
+  String get expenseAmountInvalid => 'Enter a positive amount.';
+
+  @override
+  String get expenseEmptyAll => 'No expenses yet.';
+
+  @override
+  String get expenseEmptyFiltered => 'No expenses match this filter.';
+
+  @override
+  String get expensePeriodDialogTitle => 'Quarter & year';
+
+  @override
+  String get expenseApply => 'Apply';
+
+  @override
+  String get expenseCategoryOffice => 'Office & supplies';
+
+  @override
+  String get expenseCategoryTravel => 'Travel & transport';
+
+  @override
+  String get expenseCategoryTelecom => 'Telecom & internet';
+
+  @override
+  String get expenseCategoryRent => 'Rent & premises';
+
+  @override
+  String get expenseCategoryEquipment => 'Equipment';
+
+  @override
+  String get expenseCategoryFees => 'Professional fees';
+
+  @override
+  String get expenseCategoryMarketing => 'Marketing';
+
+  @override
+  String get expenseCategoryOther => 'Other';
 
   @override
   String get onboardingActivityTitle => 'Your activity type';

@@ -4,6 +4,8 @@
 
 Starting from the existing Flutter skeleton (routing, models, i18n scaffold, screens stubbed), this roadmap wires in Firebase and delivers a complete invoicing and tax compliance tool for Moroccan auto-entrepreneurs in six phases. Each phase completes one coherent capability before the next begins — auth gates profile, profile gates invoices, invoices gate declarations, and the dashboard aggregates everything that came before.
 
+**Status (2026-04-19):** Phases **1, 2, 3, 5, and 6** are implemented in the app. **Phase 4 (Expenses)** is the remaining gap.
+
 ## Phases
 
 **Phase Numbering:**
@@ -12,12 +14,12 @@ Starting from the existing Flutter skeleton (routing, models, i18n scaffold, scr
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Firebase + Auth** - Wire Firebase to the skeleton and deliver a fully working auth flow with route guards and security rules
-- [ ] **Phase 2: Profile + Clients** - Give users a business identity (legal fields, logo, signature) and a client directory so invoices can be created
-- [ ] **Phase 3: Invoices + PDF + Payments** - Deliver the core product: invoice creation with legal Moroccan fields, cross-platform PDF export, and payment recording
+- [x] **Phase 1: Firebase + Auth** - Wire Firebase to the skeleton and deliver a fully working auth flow with route guards and security rules
+- [x] **Phase 2: Profile + Clients** - Give users a business identity (legal fields, logo, signature) and a client directory so invoices can be created
+- [x] **Phase 3: Invoices + PDF + Payments** - Deliver the core product: invoice creation with legal Moroccan fields, cross-platform PDF export, and payment recording
 - [ ] **Phase 4: Expenses** - Add expense logging so the user's full financial picture is captured before tax declarations are calculated
-- [ ] **Phase 5: Tax Declarations** - Calculate quarterly IR and CNSS obligations from real revenue data and guide the user through the filing process
-- [ ] **Phase 6: Dashboard** - Aggregate all data into a single at-a-glance view of revenue, outstanding invoices, and upcoming deadlines
+- [x] **Phase 5: Tax Declarations** - Calculate quarterly IR and CNSS obligations from real revenue data and guide the user through the filing process
+- [x] **Phase 6: Dashboard** - Aggregate all data into a single at-a-glance view of revenue, outstanding invoices, and upcoming deadlines
 
 ## Phase Details
 
@@ -39,9 +41,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Firebase project wiring — `firebase_options.dart`, Firestore offline persistence, Storage CORS, Hosting rewrite config
-- [ ] 01-02: Auth screens and Firebase Auth integration — register, sign in (email + Google), session persistence, go_router auth redirect guard
-- [ ] 01-03: Firestore security rules + emulator tests — `/users/{uid}/` subcollection pattern, cross-tenant and unauthenticated rule tests
+- [x] 01-01: Firebase project wiring — `firebase_options.dart`, Firestore offline persistence, Storage CORS, Hosting rewrite config
+- [x] 01-02: Auth screens and Firebase Auth integration — register, sign in (email + Google), session persistence, go_router auth redirect guard
+- [x] 01-03: Firestore security rules + emulator tests — `/users/{uid}/` subcollection pattern, cross-tenant and unauthenticated rule tests
 
 ---
 
@@ -63,11 +65,11 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Profile setup screen and Firestore persistence — all legal fields, activity category selector with explainer, PROF-01, PROF-02
-- [ ] 02-02: Logo upload, branding color picker, Storage integration — PROF-03, PROF-04
-- [ ] 02-03: Signature capture (SfSignaturePad draw + image upload alternative) — test all 3 platforms — PROF-05, PROF-06, PROF-07
-- [ ] 02-04: Clients CRUD — list, create, edit, delete screens with ICE/IF fields — CLIE-01, CLIE-02, CLIE-03
-- [ ] 02-05: Client detail screen showing linked invoices — CLIE-04
+- [x] 02-01: Profile setup screen and Firestore persistence — all legal fields, activity category selector with explainer, PROF-01, PROF-02
+- [x] 02-02: Logo upload, branding color picker, Storage integration — PROF-03, PROF-04
+- [x] 02-03: Signature capture (SfSignaturePad draw + image upload alternative) — test all 3 platforms — PROF-05, PROF-06, PROF-07
+- [x] 02-04: Clients CRUD — list, create, edit, delete screens with ICE/IF fields — CLIE-01, CLIE-02, CLIE-03
+- [x] 02-05: Client detail screen showing linked invoices — CLIE-04
 
 ---
 
@@ -89,11 +91,11 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: PDF spike — validate cross-platform PDF generation with bundled TTF fonts, French accented characters, and web download behavior before building any invoice UI — INVC-07, INVC-08
-- [ ] 03-02: Invoice creation — client picker, manual line items, subtotal/total computation, Firestore transaction for sequential numbering — INVC-01, INVC-02, INVC-03, INVC-04
-- [ ] 03-03: Invoice legal fields, status workflow, and invoice list screen — INVC-05, INVC-06, INVC-09, INVC-10
-- [ ] 03-04: PDF generation integrated with branding, logo, and signature — INVC-07, INVC-08
-- [ ] 03-05: Payment recording and balance display — PAYM-01, PAYM-02, PAYM-03
+- [x] 03-01: PDF spike — validate cross-platform PDF generation with bundled TTF fonts, French accented characters, and web download behavior before building any invoice UI — INVC-07, INVC-08
+- [x] 03-02: Invoice creation — client picker, manual line items, subtotal/total computation, Firestore transaction for sequential numbering — INVC-01, INVC-02, INVC-03, INVC-04
+- [x] 03-03: Invoice legal fields, status workflow, and invoice list screen — INVC-05, INVC-06, INVC-09, INVC-10
+- [x] 03-04: PDF generation integrated with branding, logo, and signature — INVC-07, INVC-08
+- [x] 03-05: Payment recording and balance display — PAYM-01, PAYM-02, PAYM-03
 
 ---
 
@@ -134,9 +136,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: Tax rate config — populate `/config/taxRates` Firestore document with verified rates (IR by activity type, CNSS rate + plancher), write pure Dart `TaxCalculator` with unit tests — DECL-02, DECL-03, DECL-04
-- [ ] 05-02: Activity category onboarding selector and declaration creation flow — DECL-01, DECL-05, DECL-06
-- [ ] 05-03: Filing guide UX, mark-as-filed action, and declaration history screen — DECL-07, DECL-08
+- [x] 05-01: Tax rate config — populate `/config/taxRates` Firestore document with verified rates (IR by activity type, CNSS rate + plancher), write pure Dart `TaxCalculator` with unit tests — DECL-02, DECL-03, DECL-04
+- [x] 05-02: Activity category onboarding selector and declaration creation flow — DECL-01, DECL-05, DECL-06
+- [x] 05-03: Filing guide UX, mark-as-filed action, and declaration history screen — DECL-07, DECL-08
 
 ---
 
@@ -158,8 +160,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 06-01: Denormalized summary document design and Cloud Function (or client-side trigger) to maintain revenue and invoice counters — DASH-01, DASH-03
-- [ ] 06-02: Dashboard screen — revenue summary, deadline countdown, outstanding invoices, ceiling alert, top clients — DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+- [ ] 06-01: Denormalized summary document design and Cloud Function (or client-side trigger) to maintain revenue and invoice counters — DASH-01, DASH-03 *(not shipped: dashboard aggregates client-side / live queries; optional future optimization)*
+- [x] 06-02: Dashboard screen — revenue summary, deadline countdown, outstanding invoices, ceiling alert, top clients — DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
 
 ---
 
@@ -170,9 +172,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Firebase + Auth | 0/3 | Not started | - |
-| 2. Profile + Clients | 0/5 | Not started | - |
-| 3. Invoices + PDF + Payments | 0/5 | Not started | - |
-| 4. Expenses | 0/1 | Not started | - |
-| 5. Tax Declarations | 0/3 | Not started | - |
-| 6. Dashboard | 0/2 | Not started | - |
+| 1. Firebase + Auth | 3/3 | Complete | 2026 (shipped) |
+| 2. Profile + Clients | 5/5 | Complete | 2026 (shipped) |
+| 3. Invoices + PDF + Payments | 5/5 | Complete | 2026 (shipped) |
+| 4. Expenses | 0/1 | **Not started** | - |
+| 5. Tax Declarations | 3/3 | Complete | 2026 (shipped) |
+| 6. Dashboard | 1/2 | UI shipped (`06-02`); `06-01` optional | 2026 |

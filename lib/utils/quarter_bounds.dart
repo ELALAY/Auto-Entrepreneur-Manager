@@ -15,3 +15,15 @@ bool dateOnlyInQuarter(DateTime instant, int year, int quarter) {
   final end = DateTime(b.year, b.month, b.day);
   return !d.isBefore(start) && !d.isAfter(end);
 }
+
+/// Calendar year and civil quarter (1–4) containing [instant] (date-only).
+(int year, int quarter) calendarQuarterContaining(DateTime instant) {
+  final d = DateTime(instant.year, instant.month, instant.day);
+  final quarter = ((d.month - 1) ~/ 3) + 1;
+  return (d.year, quarter);
+}
+
+bool dateInCalendarMonth(DateTime instant, int year, int month) {
+  final d = DateTime(instant.year, instant.month, instant.day);
+  return d.year == year && d.month == month;
+}

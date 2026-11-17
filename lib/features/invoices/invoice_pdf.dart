@@ -71,6 +71,25 @@ Future<List<pw.Font>> _loadFonts() async {
   }
 }
 
+/// Safe filename for print/save dialogs (`Printing.layoutPdf` [name], share sheets, etc.).
+String invoicePdfDocumentName(Invoice invoice) {
+  var raw = invoice.number.trim();
+  if (raw.toLowerCase().endsWith('.pdf')) {
+    raw = raw.substring(0, raw.length - 4).trim();
+  }
+  var base = raw.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+  base = base.replaceAll(RegExp(r'_+'), '_').trim();
+  if (base.isEmpty || base == '_') {
+    final id = invoice.id;
+    if (id.isEmpty) {
+      base = 'invoice';
+    } else {
+      base = id.length >= 8 ? id.substring(0, 8) : id;
+    }
+  }
+  return '$base.pdf';
+}
+
 /// Builds the invoice PDF bytes.
 /// Pass [fontBase]/[fontBold] in tests to avoid loading assets.
 Future<Uint8List> buildInvoicePdfBytes({

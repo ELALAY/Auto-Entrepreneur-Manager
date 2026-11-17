@@ -1,23 +1,18 @@
 {
-  "version": 3,
+  "version": 4,
   "effectiveFrom": "2026-01-01",
   "irRateCommercial": 0.005,
   "irRateArtisanal": 0.005,
   "irRateLiberal": 0.005,
   "irRateServices": 0.01,
-  "cnssQuarterBands": [
-    { "maxQuarterlyMad": 2500, "amountMad": 300 },
-    { "maxQuarterlyMad": 5000, "amountMad": 570 },
-    { "maxQuarterlyMad": 10000, "amountMad": 720 },
-    { "maxQuarterlyMad": 25000, "amountMad": 1050 },
-    { "maxQuarterlyMad": 50000, "amountMad": 2250 },
-    { "maxQuarterlyMad": null, "amountMad": 3600 }
-  ],
-  "cnssNil": 300,
-  "cnssTo2500": 570,
-  "cnssTo5000": 720,
-  "cnssTo10000": 1050,
-  "cnssTo25000": 1500,
-  "cnssTo50000": 2250,
-  "cnssAbove50000": 3600
+  "cnssIrBands": [
+    { "maxQuarterlyIrMad": 125, "amountMad": 300 },
+    { "maxQuarterlyIrMad": 250, "amountMad": 390 },
+    { "maxQuarterlyIrMad": 625, "amountMad": 570 },
+    { "maxQuarterlyIrMad": 1250, "amountMad": 720 },
+    { "maxQuarterlyIrMad": 2500, "amountMad": 1050 },
+    { "maxQuarterlyIrMad": 6250, "amountMad": 1500 },
+    { "maxQuarterlyIrMad": 12500, "amountMad": 2250 },
+    { "maxQuarterlyIrMad": null, "amountMad": 3600 }
+  ]
 }

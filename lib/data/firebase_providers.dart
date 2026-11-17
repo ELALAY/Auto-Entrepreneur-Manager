@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'catalog_repository.dart';
 import 'client_repository.dart';
+import 'expense_repository.dart';
 import 'declaration_repository.dart';
 import 'invoice_repository.dart';
 import 'profile_repository.dart';
@@ -42,4 +43,11 @@ final taxRatesRepositoryProvider = Provider<TaxRatesRepository>((ref) {
 
 final declarationRepositoryProvider = Provider<DeclarationRepository>((ref) {
   return DeclarationRepository(ref.watch(firebaseFirestoreProvider));
+});
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
+  return ExpenseRepository(
+    ref.watch(firebaseFirestoreProvider),
+    ref.watch(firebaseStorageProvider),
+  );
 });

@@ -179,6 +179,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardDeclarationBannerOpen => 'Ouvrir la déclaration';
 
   @override
+  String dashboardQuickPeekIncomeLabel(int quarter, int year) {
+    return 'Encaissé · Q$quarter $year';
+  }
+
+  @override
+  String get dashboardQuickPeekPendingLabel => 'Reste à encaisser';
+
+  @override
+  String get dashboardQuickPeekQuarterEndLabel => 'Fin du trimestre';
+
+  @override
+  String dashboardQuickPeekQuarterEndDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days jours restants',
+      one: '1 jour restant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashboardQuickPeekQuarterEndToday => 'Dernier jour du trimestre';
+
+  @override
+  String get dashboardQuickPeekQuarterEndPast => 'Trimestre terminé';
+
+  @override
+  String get dashboardQuickPeekExpectedTaxLabel =>
+      'Déclaration estimée (IR+CNSS)';
+
+  @override
+  String get dashboardQuickPeekExpectedTaxFootnote =>
+      'Selon les paiements datés dans ce trimestre.';
+
+  @override
   String get moreSectionBusiness => 'Activité';
 
   @override
@@ -943,6 +979,114 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get declGo => 'Ouvrir';
+
+  @override
+  String get expenseFilterAll => 'Toutes';
+
+  @override
+  String get expenseFilterMonth => 'Mois';
+
+  @override
+  String get expenseFilterQuarter => 'Trimestre';
+
+  @override
+  String get expensePickMonthHint => 'Mois affiché';
+
+  @override
+  String get expensePickQuarterHint => 'Trimestre affiché';
+
+  @override
+  String expensePeriodQuarter(int quarter, int year) {
+    return 'T$quarter $year';
+  }
+
+  @override
+  String get expenseFormAddTitle => 'Nouvelle dépense';
+
+  @override
+  String get expenseFormEditTitle => 'Modifier la dépense';
+
+  @override
+  String get expenseSaved => 'Dépense enregistrée.';
+
+  @override
+  String get expenseSaveError => 'Enregistrement impossible. Réessayez.';
+
+  @override
+  String get expenseDeleteConfirmTitle => 'Supprimer la dépense ?';
+
+  @override
+  String get expenseDeleteConfirmBody =>
+      'La dépense sera supprimée ainsi que la pièce jointe éventuelle.';
+
+  @override
+  String get expenseDeleted => 'Dépense supprimée.';
+
+  @override
+  String get expenseDeleteError => 'Suppression impossible. Réessayez.';
+
+  @override
+  String get expenseFieldAmount => 'Montant (MAD)';
+
+  @override
+  String get expenseFieldDate => 'Date';
+
+  @override
+  String get expenseFieldCategory => 'Catégorie';
+
+  @override
+  String get expenseFieldDescription => 'Description';
+
+  @override
+  String get expenseFieldReceipt => 'Justificatif';
+
+  @override
+  String get expenseAttachReceipt => 'Ajouter une photo';
+
+  @override
+  String get expenseReplaceReceipt => 'Remplacer la photo';
+
+  @override
+  String get expenseRemoveReceipt => 'Supprimer la pièce jointe';
+
+  @override
+  String get expenseAmountInvalid => 'Saisissez un montant positif.';
+
+  @override
+  String get expenseEmptyAll => 'Aucune dépense pour le moment.';
+
+  @override
+  String get expenseEmptyFiltered => 'Aucune dépense ne correspond au filtre.';
+
+  @override
+  String get expensePeriodDialogTitle => 'Trimestre et année';
+
+  @override
+  String get expenseApply => 'Appliquer';
+
+  @override
+  String get expenseCategoryOffice => 'Fournitures & bureau';
+
+  @override
+  String get expenseCategoryTravel => 'Déplacements & transport';
+
+  @override
+  String get expenseCategoryTelecom => 'Télécom & internet';
+
+  @override
+  String get expenseCategoryRent => 'Loyer & locaux';
+
+  @override
+  String get expenseCategoryEquipment => 'Équipement';
+
+  @override
+  String get expenseCategoryFees => 'Honoraires pros';
+
+  @override
+  String get expenseCategoryMarketing => 'Marketing';
+
+  @override
+  String get expenseCategoryOther => 'Autre';
 
   @override
   String get onboardingActivityTitle => 'Votre type d\'activité';

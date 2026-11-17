@@ -49,5 +49,18 @@
 	<string>This app needs photo library access to upload your business logo and signature.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app may use the camera to capture images for your profile.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>autoentinvoice</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>autoentinvoice</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

@@ -165,7 +165,7 @@ class _DeclarationDetailScreenState extends ConsumerState<DeclarationDetailScree
                         );
                         final computation = computeQuarterlyTaxFromActivityRevenues(
                           revenueByCategory: revenueByActivity,
-                          totalRevenueForCnss: totalRevenue,
+                          totalRevenue: totalRevenue,
                           rates: rates,
                           hasCnss: profile?.hasCnss ?? false,
                         );

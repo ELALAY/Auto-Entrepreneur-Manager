@@ -1,0 +1,4 @@
+/* Home screen widget — strings match Android values */
+"widget_title" = "new AE invoice";
+"widget_display_name" = "New AE invoice";
+"widget_description" = "Create a new invoice";

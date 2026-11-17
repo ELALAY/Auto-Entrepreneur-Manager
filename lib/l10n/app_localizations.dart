@@ -376,6 +376,54 @@ abstract class AppLocalizations {
   /// **'Open declaration'**
   String get dashboardDeclarationBannerOpen;
 
+  /// No description provided for @dashboardQuickPeekIncomeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash in · Q{quarter} {year}'**
+  String dashboardQuickPeekIncomeLabel(int quarter, int year);
+
+  /// No description provided for @dashboardQuickPeekPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending to cash in'**
+  String get dashboardQuickPeekPendingLabel;
+
+  /// No description provided for @dashboardQuickPeekQuarterEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Until quarter end'**
+  String get dashboardQuickPeekQuarterEndLabel;
+
+  /// No description provided for @dashboardQuickPeekQuarterEndDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, one{1 day left} other{{days} days left}}'**
+  String dashboardQuickPeekQuarterEndDays(int days);
+
+  /// No description provided for @dashboardQuickPeekQuarterEndToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Last day of quarter'**
+  String get dashboardQuickPeekQuarterEndToday;
+
+  /// No description provided for @dashboardQuickPeekQuarterEndPast.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter ended'**
+  String get dashboardQuickPeekQuarterEndPast;
+
+  /// No description provided for @dashboardQuickPeekExpectedTaxLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. declaration (IR+CNSS)'**
+  String get dashboardQuickPeekExpectedTaxLabel;
+
+  /// No description provided for @dashboardQuickPeekExpectedTaxFootnote.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on payments dated this quarter.'**
+  String get dashboardQuickPeekExpectedTaxFootnote;
+
   /// No description provided for @moreSectionBusiness.
   ///
   /// In en, this message translates to:
@@ -1791,6 +1839,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open'**
   String get declGo;
+
+  /// No description provided for @expenseFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get expenseFilterAll;
+
+  /// No description provided for @expenseFilterMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get expenseFilterMonth;
+
+  /// No description provided for @expenseFilterQuarter.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter'**
+  String get expenseFilterQuarter;
+
+  /// No description provided for @expensePickMonthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Month shown'**
+  String get expensePickMonthHint;
+
+  /// No description provided for @expensePickQuarterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter shown'**
+  String get expensePickQuarterHint;
+
+  /// No description provided for @expensePeriodQuarter.
+  ///
+  /// In en, this message translates to:
+  /// **'Q{quarter} {year}'**
+  String expensePeriodQuarter(int quarter, int year);
+
+  /// No description provided for @expenseFormAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New expense'**
+  String get expenseFormAddTitle;
+
+  /// No description provided for @expenseFormEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get expenseFormEditTitle;
+
+  /// No description provided for @expenseSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense saved.'**
+  String get expenseSaved;
+
+  /// No description provided for @expenseSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save expense. Try again.'**
+  String get expenseSaveError;
+
+  /// No description provided for @expenseDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete expense?'**
+  String get expenseDeleteConfirmTitle;
+
+  /// No description provided for @expenseDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the expense and deletes any attached receipt from storage.'**
+  String get expenseDeleteConfirmBody;
+
+  /// No description provided for @expenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense deleted.'**
+  String get expenseDeleted;
+
+  /// No description provided for @expenseDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete. Try again.'**
+  String get expenseDeleteError;
+
+  /// No description provided for @expenseFieldAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (MAD)'**
+  String get expenseFieldAmount;
+
+  /// No description provided for @expenseFieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get expenseFieldDate;
+
+  /// No description provided for @expenseFieldCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get expenseFieldCategory;
+
+  /// No description provided for @expenseFieldDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get expenseFieldDescription;
+
+  /// No description provided for @expenseFieldReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get expenseFieldReceipt;
+
+  /// No description provided for @expenseAttachReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach receipt'**
+  String get expenseAttachReceipt;
+
+  /// No description provided for @expenseReplaceReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace receipt'**
+  String get expenseReplaceReceipt;
+
+  /// No description provided for @expenseRemoveReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove attachment'**
+  String get expenseRemoveReceipt;
+
+  /// No description provided for @expenseAmountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive amount.'**
+  String get expenseAmountInvalid;
+
+  /// No description provided for @expenseEmptyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet.'**
+  String get expenseEmptyAll;
+
+  /// No description provided for @expenseEmptyFiltered.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses match this filter.'**
+  String get expenseEmptyFiltered;
+
+  /// No description provided for @expensePeriodDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarter & year'**
+  String get expensePeriodDialogTitle;
+
+  /// No description provided for @expenseApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get expenseApply;
+
+  /// No description provided for @expenseCategoryOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office & supplies'**
+  String get expenseCategoryOffice;
+
+  /// No description provided for @expenseCategoryTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel & transport'**
+  String get expenseCategoryTravel;
+
+  /// No description provided for @expenseCategoryTelecom.
+  ///
+  /// In en, this message translates to:
+  /// **'Telecom & internet'**
+  String get expenseCategoryTelecom;
+
+  /// No description provided for @expenseCategoryRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent & premises'**
+  String get expenseCategoryRent;
+
+  /// No description provided for @expenseCategoryEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get expenseCategoryEquipment;
+
+  /// No description provided for @expenseCategoryFees.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional fees'**
+  String get expenseCategoryFees;
+
+  /// No description provided for @expenseCategoryMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing'**
+  String get expenseCategoryMarketing;
+
+  /// No description provided for @expenseCategoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get expenseCategoryOther;
 
   /// No description provided for @onboardingActivityTitle.
   ///

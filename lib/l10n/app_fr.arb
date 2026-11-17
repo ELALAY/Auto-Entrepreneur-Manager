@@ -44,6 +44,25 @@
   "dashboardDeclarationBannerLastDay": "Déclaration Q{quarter} {year} : dernier jour pour déposer (échéance le {deadline}).",
   "dashboardDeclarationBannerOverdue": "Déclaration Q{quarter} {year} : en retard de {daysOverdue, plural, one{1 jour} other{{daysOverdue} jours}} (échéance le {deadline}).",
   "dashboardDeclarationBannerOpen": "Ouvrir la déclaration",
+  "dashboardQuickPeekIncomeLabel": "Encaissé · Q{quarter} {year}",
+  "@dashboardQuickPeekIncomeLabel": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
+  "dashboardQuickPeekPendingLabel": "Reste à encaisser",
+  "dashboardQuickPeekQuarterEndLabel": "Fin du trimestre",
+  "dashboardQuickPeekQuarterEndDays": "{days, plural, one{1 jour restant} other{{days} jours restants}}",
+  "@dashboardQuickPeekQuarterEndDays": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "dashboardQuickPeekQuarterEndToday": "Dernier jour du trimestre",
+  "dashboardQuickPeekQuarterEndPast": "Trimestre terminé",
+  "dashboardQuickPeekExpectedTaxLabel": "Déclaration estimée (IR+CNSS)",
+  "dashboardQuickPeekExpectedTaxFootnote": "Selon les paiements datés dans ce trimestre.",
   "moreSectionBusiness": "Activité",
   "moreSectionAccount": "Compte",
   "placeholderInvoices": "Créez et gérez les factures liées aux clients.",
@@ -291,6 +310,47 @@
   "declYear": "Année",
   "declQuarter": "Trimestre",
   "declGo": "Ouvrir",
+  "expenseFilterAll": "Toutes",
+  "expenseFilterMonth": "Mois",
+  "expenseFilterQuarter": "Trimestre",
+  "expensePickMonthHint": "Mois affiché",
+  "expensePickQuarterHint": "Trimestre affiché",
+  "expensePeriodQuarter": "T{quarter} {year}",
+  "@expensePeriodQuarter": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
+  "expenseFormAddTitle": "Nouvelle dépense",
+  "expenseFormEditTitle": "Modifier la dépense",
+  "expenseSaved": "Dépense enregistrée.",
+  "expenseSaveError": "Enregistrement impossible. Réessayez.",
+  "expenseDeleteConfirmTitle": "Supprimer la dépense ?",
+  "expenseDeleteConfirmBody": "La dépense sera supprimée ainsi que la pièce jointe éventuelle.",
+  "expenseDeleted": "Dépense supprimée.",
+  "expenseDeleteError": "Suppression impossible. Réessayez.",
+  "expenseFieldAmount": "Montant (MAD)",
+  "expenseFieldDate": "Date",
+  "expenseFieldCategory": "Catégorie",
+  "expenseFieldDescription": "Description",
+  "expenseFieldReceipt": "Justificatif",
+  "expenseAttachReceipt": "Ajouter une photo",
+  "expenseReplaceReceipt": "Remplacer la photo",
+  "expenseRemoveReceipt": "Supprimer la pièce jointe",
+  "expenseAmountInvalid": "Saisissez un montant positif.",
+  "expenseEmptyAll": "Aucune dépense pour le moment.",
+  "expenseEmptyFiltered": "Aucune dépense ne correspond au filtre.",
+  "expensePeriodDialogTitle": "Trimestre et année",
+  "expenseApply": "Appliquer",
+  "expenseCategoryOffice": "Fournitures & bureau",
+  "expenseCategoryTravel": "Déplacements & transport",
+  "expenseCategoryTelecom": "Télécom & internet",
+  "expenseCategoryRent": "Loyer & locaux",
+  "expenseCategoryEquipment": "Équipement",
+  "expenseCategoryFees": "Honoraires pros",
+  "expenseCategoryMarketing": "Marketing",
+  "expenseCategoryOther": "Autre",
   "onboardingActivityTitle": "Votre type d'activité",
   "onboardingActivitySubtitle": "Choisissez la catégorie qui correspond le mieux à votre activité d'auto-entrepreneur. Elle détermine le barème d'IR appliqué.",
   "onboardingContinue": "Accéder à l'application",

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_new_invoice_title">Creer Facture AE</string>
+    <string name="widget_new_invoice_description">Ouvrir la création de facture</string>
+    <string name="widget_new_invoice_label">Nouvelle facture AE</string>
+    <string name="widget_dashboard_peek_label">Tableau de bord AE</string>
+    <string name="widget_dashboard_peek_description">Encaissements du trimestre, reste à encaisser et estimation</string>
+    <string name="widget_dashboard_peek_placeholder_title">Ouvrez l’app pour actualiser</string>
+    <string name="widget_dashboard_peek_placeholder_body">Appuyez pour ouvrir l’application.</string>
+</resources>

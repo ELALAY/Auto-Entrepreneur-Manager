@@ -290,7 +290,10 @@ class InvoiceDetailScreen extends ConsumerWidget {
             if (!dialogCtx.mounted) return;
             Navigator.of(dialogCtx).pop();
             try {
-              await Printing.layoutPdf(onLayout: (_) async => bytes);
+              await Printing.layoutPdf(
+                onLayout: (_) async => bytes,
+                name: invoicePdfDocumentName(inv),
+              );
               // #region agent log
               await agentNdjsonLog(
                 hypothesisId: 'E',
