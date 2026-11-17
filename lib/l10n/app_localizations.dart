@@ -329,8 +329,14 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardStatsHint.
   ///
   /// In en, this message translates to:
-  /// **'Totals update as you create and collect invoices.'**
+  /// **'Quarter cash follows invoice dates. The estimated declaration uses payments dated this quarter. Expenses follow the expense date.'**
   String get dashboardStatsHint;
+
+  /// No description provided for @dashboardQuarterExpensesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses · Q{quarter} {year}'**
+  String dashboardQuarterExpensesLabel(int quarter, int year);
 
   /// No description provided for @dashboardSectionShortcuts.
   ///

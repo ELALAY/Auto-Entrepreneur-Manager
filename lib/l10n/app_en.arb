@@ -39,7 +39,14 @@
   "authErrorGeneric": "An error occurred. Please try again.",
   "placeholderDashboard": "Revenue summary, declaration deadlines, and outstanding invoices will appear here.",
   "dashboardTagline": "Revenue, cash flow, and compliance — in one place.",
-  "dashboardStatsHint": "Totals update as you create and collect invoices.",
+  "dashboardStatsHint": "Quarter cash follows invoice dates. The estimated declaration uses payments dated this quarter. Expenses follow the expense date.",
+  "dashboardQuarterExpensesLabel": "Expenses · Q{quarter} {year}",
+  "@dashboardQuarterExpensesLabel": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
   "dashboardSectionShortcuts": "Shortcuts",
   "dashboardDeclarationBannerActive": "Q{quarter} {year} declaration: {daysRemaining, plural, one{1 day left} other{{daysRemaining} days left}} (deadline {deadline}).",
   "@dashboardDeclarationBannerActive": {

@@ -129,7 +129,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashboardStatsHint =>
-      'Les totaux se mettent à jour au fil des factures et encaissements.';
+      'L\'encaissé du trimestre suit la date de facture. La déclaration estimée suit les paiements datés dans ce trimestre. Les dépenses suivent leur date.';
+
+  @override
+  String dashboardQuarterExpensesLabel(int quarter, int year) {
+    return 'Dépenses · Q$quarter $year';
+  }
 
   @override
   String get dashboardSectionShortcuts => 'Raccourcis';

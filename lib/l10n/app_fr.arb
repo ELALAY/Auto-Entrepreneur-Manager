@@ -38,7 +38,14 @@
   "authErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
   "placeholderDashboard": "Résumé du chiffre d'affaires, échéances et factures en attente s'afficheront ici.",
   "dashboardTagline": "CA, trésorerie et obligations — au même endroit.",
-  "dashboardStatsHint": "Les totaux se mettent à jour au fil des factures et encaissements.",
+  "dashboardStatsHint": "L'encaissé du trimestre suit la date de facture. La déclaration estimée suit les paiements datés dans ce trimestre. Les dépenses suivent leur date.",
+  "dashboardQuarterExpensesLabel": "Dépenses · Q{quarter} {year}",
+  "@dashboardQuarterExpensesLabel": {
+    "placeholders": {
+      "quarter": { "type": "int" },
+      "year": { "type": "int" }
+    }
+  },
   "dashboardSectionShortcuts": "Raccourcis",
   "dashboardDeclarationBannerActive": "Déclaration Q{quarter} {year} : il reste {daysRemaining, plural, one{1 jour} other{{daysRemaining} jours}} (échéance le {deadline}).",
   "dashboardDeclarationBannerLastDay": "Déclaration Q{quarter} {year} : dernier jour pour déposer (échéance le {deadline}).",

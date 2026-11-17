@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A cross-platform Flutter app (Android, iOS, Web) that helps Moroccan auto-entrepreneurs run their freelance business and stay tax-compliant. Users can manage clients, create branded invoices, track income *(expense tracking pending)*, and get step-by-step quarterly filing guidance with calculated IR and CNSS amounts. Built as a multi-tenant SaaS — anyone can sign up and use it.
+A cross-platform Flutter app (Android, iOS, Web) that helps Moroccan auto-entrepreneurs run their freelance business and stay tax-compliant. Users can manage clients, create branded invoices, track income and expenses, and get step-by-step quarterly filing guidance with calculated IR and CNSS amounts. Built as a multi-tenant SaaS — anyone can sign up and use it.
 
 ## Core Value
 
@@ -45,10 +45,16 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 - [x] App shows invoice balance = total − payments received
 - [x] App shows which invoices are partially paid or overdue
 
+#### Expenses
+
+- [x] User can log expenses (amount, date, category, description)
+- [x] User can attach a receipt image to an expense
+- [x] User can view expenses filtered by month or quarter
+
 #### Tax Declarations (Quarterly)
 
-- [x] App explains activity categories and applicable rates (from config)
-- [x] App calculates IR and CNSS amounts due based on quarterly **paid** revenue *(IR per activity; CNSS on total quarterly paid revenue in current implementation)*
+- [x] App explains activity categories and applicable rates (from config, with bundled defaults)
+- [x] App calculates IR per activity on quarterly **paid** revenue, then a flat CNSS amount from that quarter's total IR
 - [x] User gets a step-by-step filing guide each quarter
 - [x] User can mark a declaration as filed and track status per quarter
 - [x] App shows declaration history
@@ -56,16 +62,17 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 #### Dashboard
 
 - [x] User sees revenue summary (current quarter, year to date)
+- [x] User sees this quarter's expenses next to quarter revenue
+- [x] User sees this quarter's estimated declaration (IR + CNSS), calculated the same way as the declaration screen
 - [x] User sees upcoming declaration deadline
 - [x] User sees outstanding invoices and overdue amounts
 
 ### Active *(not yet implemented)*
 
-#### Expenses
+#### Dashboard
 
-- [ ] User can log expenses (amount, date, category, description)
-- [ ] User can attach a receipt image to an expense
-- [ ] User can view expenses filtered by period
+- [ ] User sees a revenue-ceiling alert when year-to-date paid revenue is within 20% of the annual limit
+- [ ] User sees top clients by paid revenue
 
 ### Out of Scope
 
@@ -78,7 +85,8 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 ## Context
 
 - **Legal regime**: Moroccan auto-entrepreneur (régime auto-entrepreneur) — flat contribution rates on revenue, declared and paid quarterly to CNSS + DGI
-- **Activity types**: Commercial, Artisanal, Liberal — app explains each and applies correct IR rates from config
+- **Activity types**: Commercial, artisanal, liberal, and services — each has an IR rate from config (bundled defaults: 0.5% for the first three, 1% for services)
+- **CNSS**: Flat quarterly amount chosen from the quarter's IR, not a percentage of turnover. Bands: 125 → 300, 250 → 390, 625 → 570, 1,250 → 720, 2,500 → 1,050, 6,250 → 1,500, 12,500 → 2,250, above → 3,600 MAD. Already-affiliated profiles (`hasCnss`) owe 0.
 - **Invoice legal requirements**: Morocco requires ICE, IF, CNSS number, sequential numbering, date, client details
 - **Platform**: Flutter (Dart) — single codebase for Android, iOS, Web
 - **Backend**: Firebase — Auth, Firestore (data), Storage (images, PDFs, receipts, signatures)
@@ -95,7 +103,7 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 | Invoice | id, userId, clientId, number, date, dueDate, status, **activityCategory**, lineItems, signatureEnabled, notes |
 | InvoiceItem | serviceId (optional catalog id), description, qty, unitPrice, total |
 | Payment | id, invoiceId, userId, date, amount, method |
-| Expense | id, userId, date, amount, category, description, receiptUrl *(schema TBD when Phase 4 ships)* |
+| Expense | id, userId, date, amount, category (office/travel/telecom/rent/equipment/fees/marketing/other), description, receiptUrl |
 | Declaration | id, userId, period (Q+year), revenue/tax amounts, status, filedDate |
 
 ## Constraints
@@ -114,8 +122,16 @@ A Moroccan auto-entrepreneur can complete their quarterly tax declaration confid
 | English + French only | Arabic adds RTL complexity for v1 | **Adopted** |
 | Free for v1 | Validate before monetizing | **Adopted** |
 | Manual filing (no portal API) | No official Moroccan API | **Adopted** |
-| Tax rates in Firestore | Stay aligned with regulation changes | **Adopted** |
+| Tax rates in Firestore | Stay aligned with regulation changes | **Adopted** — version 4 `cnssIrBands`; bundled defaults if the document is missing or still uses revenue caps |
+| CNSS from quarterly IR | Official AE scale is a flat amount on the quarter's IR, not on turnover | **Adopted** 2026-11-17 |
+| Pin Glance 1.2.0 and Work 2.11.2 | `home_widget` 0.9.x open ranges pull APIs this AGP/SDK cannot compile | **Adopted** — `android/pin_glance.gradle` |
+
+### Also shipped (outside the original phase list)
+
+- Android home-screen widgets: new invoice, dashboard peek
+- On-device MCP connector (More → MCP) for local tool access
+- Invoice list filters
 
 ---
 
-*Last updated: 2026-04-19 — requirements status: complete except Expenses*
+*Last updated: 2026-11-17 — dashboard shows quarter expenses and estimated IR+CNSS; ceiling alert and top clients still open*

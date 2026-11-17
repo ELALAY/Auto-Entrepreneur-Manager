@@ -3,17 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/tax/tax_calculator.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/invoice_summary.dart';
 import '../../models/enums.dart';
 import '../../providers/declaration_providers.dart';
+import '../../providers/expense_providers.dart';
 import '../../providers/invoice_providers.dart';
+import '../../providers/profile_providers.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/declaration_filing_deadline.dart';
 import '../../utils/quarter_bounds.dart';
 import '../../widgets/quick_link_tile.dart';
 import '../../widgets/stat_card.dart';
 import 'dashboard_declaration_reminder.dart';
+import 'dashboard_quarter_snapshot.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -22,6 +26,11 @@ class DashboardScreen extends ConsumerWidget {
 
   static String _mad(double v) {
     final f = NumberFormat('#,##0', 'fr_FR');
+    return '${f.format(v)} MAD';
+  }
+
+  static String _madExact(double v) {
+    final f = NumberFormat('#,##0.00', 'fr_FR');
     return '${f.format(v)} MAD';
   }
 
@@ -187,6 +196,31 @@ class _StatsSection extends ConsumerWidget {
     final fq = filing?.declarationQuarter ?? calendarQ;
     final fy = filing?.declarationYear ?? year;
     final daysLeft = filing?.daysRemaining;
+    final l10n = AppLocalizations.of(context)!;
+
+    final periodKey = declarationPeriodKey(year, calendarQ);
+    final revenueByActivity = ref.watch(quarterPaidRevenueByActivityProvider(periodKey));
+    final taxRates = ref.watch(taxRatesStreamProvider);
+    final profile = ref.watch(userProfileStreamProvider);
+    final expenses = ref.watch(expensesStreamProvider);
+
+    final expenseTotal = expenses.asData == null
+        ? null
+        : sumExpensesInQuarter(expenses.asData!.value, year, calendarQ);
+
+    double? estimatedDeclaration;
+    final rates = taxRates.asData?.value;
+    final byActivity = revenueByActivity.asData?.value;
+    if (rates != null && byActivity != null && !profile.isLoading) {
+      final totalRevenue = byActivity.values.fold<double>(0, (sum, amount) => sum + amount);
+      final computation = computeQuarterlyTaxFromActivityRevenues(
+        revenueByCategory: byActivity,
+        totalRevenue: totalRevenue,
+        rates: rates,
+        hasCnss: profile.asData?.value?.hasCnss ?? false,
+      );
+      estimatedDeclaration = computation.irAmount + computation.cnssAmount;
+    }
 
     // ── Compute stats from summaries ─────────────────────────────────────────
     double qRevenue = 0;
@@ -235,7 +269,7 @@ class _StatsSection extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(16, overdueCount > 0 ? 12 : 16, 16, 8),
           child: Text(
-            AppLocalizations.of(context)!.dashboardStatsHint,
+            l10n.dashboardStatsHint,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -249,7 +283,7 @@ class _StatsSection extends ConsumerWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 1.15,
+            childAspectRatio: 1.05,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: [
@@ -258,6 +292,24 @@ class _StatsSection extends ConsumerWidget {
                 label: 'Encaissé Q$calendarQ · $year',
                 value: DashboardScreen._mad(qRevenue),
                 iconColor: AppColors.growthDark,
+              ),
+              StatCard(
+                icon: Icons.receipt_long_outlined,
+                label: l10n.dashboardQuarterExpensesLabel(calendarQ, year),
+                value: expenseTotal == null
+                    ? '—'
+                    : DashboardScreen._madExact(expenseTotal),
+                iconColor: AppColors.moneyDeep,
+                onTap: () => context.go('/expenses'),
+              ),
+              StatCard(
+                icon: Icons.account_balance_outlined,
+                label: l10n.dashboardQuickPeekExpectedTaxLabel,
+                value: estimatedDeclaration == null
+                    ? '—'
+                    : DashboardScreen._madExact(estimatedDeclaration),
+                iconColor: theme.colorScheme.tertiary,
+                onTap: () => context.go('/declarations/$year/$calendarQ'),
               ),
               StatCard(
                 icon: Icons.calendar_today_outlined,

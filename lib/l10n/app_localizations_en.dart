@@ -126,7 +126,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardStatsHint =>
-      'Totals update as you create and collect invoices.';
+      'Quarter cash follows invoice dates. The estimated declaration uses payments dated this quarter. Expenses follow the expense date.';
+
+  @override
+  String dashboardQuarterExpensesLabel(int quarter, int year) {
+    return 'Expenses · Q$quarter $year';
+  }
 
   @override
   String get dashboardSectionShortcuts => 'Shortcuts';

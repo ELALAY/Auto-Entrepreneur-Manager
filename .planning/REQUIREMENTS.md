@@ -1,7 +1,7 @@
 # Requirements: Auto-Entrepreneur Manager (Morocco)
 
 **Defined:** 2026-04-09
-**Status synced:** 2026-11-17 — based on STATE.md and PROJECT.md (both updated 2026-04-19). Phases 1–3 and 5–6 are documented as implemented; Phase 4 (Expenses) remains pending. This sync does not constitute a fresh code or platform verification.
+**Status synced:** 2026-11-17 — checked against the app. Phases 1–5 are implemented, including expenses. Phase 6 is missing the revenue-ceiling alert and top clients. CNSS is a flat amount from quarterly IR.
 **Core Value:** A Moroccan auto-entrepreneur can complete their quarterly tax declaration confidently, knowing exactly what they owe and how to file it, based on their real tracked revenue.
 
 ---
@@ -62,17 +62,17 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 
 ### Expenses (EXPN)
 
-- [ ] **EXPN-01**: User can log an expense (amount, date, category, description)
-- [ ] **EXPN-02**: User can view expenses filtered by quarter or month
-- [ ] **EXPN-03**: User can edit and delete an expense
-- [ ] **EXPN-V2-01**: User can optionally attach a receipt image to an expense (Firebase Storage)
+- [x] **EXPN-01**: User can log an expense (amount, date, category, description)
+- [x] **EXPN-02**: User can view expenses filtered by quarter or month
+- [x] **EXPN-03**: User can edit and delete an expense
+- [x] **EXPN-V2-01**: User can optionally attach a receipt image to an expense (Firebase Storage)
 
 ### Tax Declarations (DECL)
 
-- [x] **DECL-01**: During onboarding, user selects their activity categories (commercial, artisanal, liberal) with an explanation of each
+- [x] **DECL-01**: During onboarding, user selects their activity categories (commercial, artisanal, liberal, services) with an explanation of each
 - [x] **DECL-02**: App calculates IR amount due for a quarter based on quarterly paid revenue, bucketed by activity category
-- [x] **DECL-03**: App calculates CNSS contribution due using total quarterly paid revenue (including plancher minimum base); mixed-activity CNSS rules remain subject to regulatory validation
-- [x] **DECL-04**: Tax rates are stored in a versioned Firestore config document — not hardcoded in Dart
+- [x] **DECL-03**: App calculates CNSS as the flat quarterly amount for the quarter's total IR (300–3,600 MAD). Zero IR still selects the 300 MAD band. `hasCnss` on the profile zeroes the contribution
+- [x] **DECL-04**: Tax rates load from versioned Firestore `config/taxRates` (`cnssIrBands`). A missing or old revenue-cap document falls back to bundled version-4 defaults
 - [x] **DECL-05**: Tax calculation results display a disclaimer directing user to verify with DGI/CNSS
 - [x] **DECL-06**: User can create a quarterly declaration record (links to calculated amounts)
 - [x] **DECL-07**: User can mark a declaration as filed and record the date
@@ -84,8 +84,10 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 - [x] **DASH-01**: Dashboard shows revenue summary (current quarter paid revenue + year-to-date paid revenue)
 - [x] **DASH-02**: Dashboard shows next quarterly declaration deadline with days remaining
 - [x] **DASH-03**: Dashboard shows total outstanding invoice amount and count of overdue invoices
-- [x] **DASH-04**: Dashboard shows revenue ceiling alert when user is within 20% of their annual limit
-- [x] **DASH-05**: Dashboard shows top clients by revenue (highest turnover)
+- [x] **DASH-06**: Dashboard shows this quarter's estimated declaration (income tax + CNSS), using the same calculator as the declaration screen
+- [x] **DASH-07**: Dashboard shows expenses dated in the current quarter, next to quarter revenue
+- [ ] **DASH-04**: Dashboard shows revenue ceiling alert when user is within 20% of their annual limit
+- [ ] **DASH-05**: Dashboard shows top clients by revenue (highest turnover)
 
 ---
 
@@ -125,7 +127,7 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 
 ## Traceability
 
-*Synced 2026-11-17 with STATE.md and PROJECT.md. Expenses are the only pending capability; dashboard denormalized summaries remain an optional optimization.*
+*Synced 2026-11-17 with the codebase. Pending: DASH-04 and DASH-05. Dashboard denormalized summaries remain an optional optimization (`06-01`).*
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
@@ -158,9 +160,9 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 | PAYM-01 | Phase 3 — Invoices + PDF + Payments | Complete |
 | PAYM-02 | Phase 3 — Invoices + PDF + Payments | Complete |
 | PAYM-03 | Phase 3 — Invoices + PDF + Payments | Complete |
-| EXPN-01 | Phase 4 — Expenses | Pending |
-| EXPN-02 | Phase 4 — Expenses | Pending |
-| EXPN-03 | Phase 4 — Expenses | Pending |
+| EXPN-01 | Phase 4 — Expenses | Complete |
+| EXPN-02 | Phase 4 — Expenses | Complete |
+| EXPN-03 | Phase 4 — Expenses | Complete |
 | DECL-01 | Phase 5 — Tax Declarations | Complete |
 | DECL-02 | Phase 5 — Tax Declarations | Complete |
 | DECL-03 | Phase 5 — Tax Declarations | Complete |
@@ -172,20 +174,22 @@ Requirements marked complete reflect the documented shipped state. Existing V2 i
 | DASH-01 | Phase 6 — Dashboard | Complete |
 | DASH-02 | Phase 6 — Dashboard | Complete |
 | DASH-03 | Phase 6 — Dashboard | Complete |
-| DASH-04 | Phase 6 — Dashboard | Complete |
-| DASH-05 | Phase 6 — Dashboard | Complete |
+| DASH-06 | Phase 6 — Dashboard | Complete |
+| DASH-07 | Phase 6 — Dashboard | Complete |
+| DASH-04 | Phase 6 — Dashboard | Pending |
+| DASH-05 | Phase 6 — Dashboard | Pending |
 | INVC-V2-01 | Phase 3 — Invoices + PDF + Payments | Complete |
 | SERV-V2-01 | Phase 3 — Catalog support for invoices | Complete |
 | SERV-V2-02 | Phase 3 — Catalog support for invoices | Complete |
-| EXPN-V2-01 | Phase 4 — Expenses | Pending |
+| EXPN-V2-01 | Phase 4 — Expenses | Complete |
 | DECL-V2-01 | Phase 5 — Tax Declarations | Complete |
 
 **Coverage:**
-- v1 requirements: 50 total (AUTH: 5, PROF: 7, CLIE: 4, INVC: 11, SERV: 2, PAYM: 3, EXPN: 4, DECL: 9, DASH: 5)
-- Documented complete: 46; pending: 4 (Expenses)
+- v1 requirements: 52 total (AUTH: 5, PROF: 7, CLIE: 4, INVC: 11, SERV: 2, PAYM: 3, EXPN: 4, DECL: 9, DASH: 7)
+- Documented complete: 50; pending: 2 (DASH-04, DASH-05)
 - Mapped to phases: 50
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-09*
-*Last updated: 2026-11-17 — synced documented completion, multi-activity behavior, catalog, filing guide, and active expense scope with STATE.md and PROJECT.md*
+*Last updated: 2026-11-17 — DASH-06 and DASH-07 added for the quarter expense total and the estimated IR+CNSS card*

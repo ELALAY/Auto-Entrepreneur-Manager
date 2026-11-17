@@ -2,23 +2,23 @@
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-19)
+See: `.planning/PROJECT.md` (updated 2026-11-17)
 
 **Core value:** A Moroccan auto-entrepreneur can complete their quarterly tax declaration confidently, knowing exactly what they owe and how to file it, based on their real tracked revenue.
 
-**Current focus:** **Expenses only** - the only major capability not yet implemented (Roadmap Phase 4). Phases 1-3 and 5-6 are shipped in-app.
+**Current focus:** Finish the dashboard (revenue-ceiling alert and top clients). Phases 1–5 are shipped. Phase 6 is partial.
 
 ## Current Position
 
-Phase: **4 - Expenses** (remaining)
+Phase: **6 - Dashboard** (remaining: DASH-04, DASH-05)
 
-Plan: Implement expense CRUD plus filters when this phase is picked up (`04-01` on roadmap).
+Plan: `06-03` revenue-ceiling alert, then `06-04` top clients. `06-01` (denormalized counters) stays optional. `06-05` (quarter expenses and estimated IR+CNSS) is shipped.
 
-Status: No technical blocker documented - **product backlog = expenses**
+Status: No technical blocker. Publish Firestore `config/taxRates` version 4 (`config/taxRates.firestore.json`) so production uses the remote IR bands instead of the bundled fallback.
 
-Last activity: 2026-04-19 - Planning docs synced (complete except expenses)
+Last activity: 2026-11-17 — Dashboard shows this quarter's expenses and the estimated declaration (IR + CNSS) from the same calculator as the declaration screen.
 
-Progress: [██████████░] ~92% (expenses outstanding)
+Progress: [███████████] ~96% (ceiling alert and top clients outstanding)
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: [██████████░] ~92% (expenses outstanding)
 
 | Phase | Notes |
 |-------|--------|
-| 1-3, 5-6 | **Complete** in the app (auth, profile incl. multi-activity, clients, catalog, invoices, PDF, payments, declarations, dashboard) |
-| 4 | **Expenses** - not implemented |
+| 1–5 | **Complete** (auth, profile, clients, catalog, invoices, PDF, payments, expenses, declarations) |
+| 6 | **Partial** — quarter/YTD revenue, quarter expenses, estimated IR+CNSS, deadline, outstanding and overdue are on the dashboard. Ceiling alert and top clients are not. |
 
 **Recent Trend:**
 
@@ -51,22 +51,27 @@ Decisions are logged in `PROJECT.md` Key Decisions table.
 Recent decisions affecting current work:
 
 - Stack: Flutter + Firebase, Riverpod 2.x, `go_router`
-- Tax rates from Firestore config - never hardcoded for filing calculations
-- Multi-activity support: profile lists tax activities; catalog items and invoices carry activity; quarterly IR buckets by activity; CNSS uses total quarterly paid revenue (validate Moroccan mixed-activity CNSS rules if regulations require)
+- Tax rates: Firestore `config/taxRates` when the document matches the IR-band schema; otherwise `TaxRatesConfig.bundledMoroccoDefaults()` (same numbers as `config/taxRates.firestore.json` version 4)
+- Multi-activity: profile lists tax activities (commercial, artisanal, liberal, services); catalog items and invoices carry one activity; quarterly IR is summed per activity
+- CNSS is the flat quarterly amount for that total IR (125 → 300 MAD through above 12,500 → 3,600 MAD). A quarter with no revenue still owes 300 MAD unless the profile is already affiliated to CNSS (`hasCnss`)
+- Android: `android/pin_glance.gradle` pins Glance to 1.2.0 and WorkManager to 2.11.2, and raises library minSdk to 23, so `home_widget` 0.9.x open ranges still build on AGP 8.7 / compileSdk 35
 
 ### Pending Todos
 
-- **Phase 4 - Expenses:** amount/date/category/description, receipt image optional, period filters - see `ROADMAP.md` Phase 4 and `PROJECT.md` Active requirements.
+- **Phase 6 — DASH-04:** Alert when year-to-date paid revenue is within 20% of the annual ceiling for the user's activity (commerce/artisanat 500,000 MAD, services 200,000 MAD — confirm current DGI ceilings before shipping).
+- **Phase 6 — DASH-05:** Top clients by paid revenue.
+- **Ops:** Replace the live Firestore `config/taxRates` document with version 4 (`cnssIrBands`). Documents that still use `cnssNil` / `cnssTo2500` are rejected.
 
 ### Blockers/Concerns
 
-- **Rates:** Keep Firestore IR/CNSS config aligned with current DGI/CNSS rules.
+- **Rates:** Bundled defaults match the 2026-11-17 scale. Re-check DGI/CNSS when the Finance Law changes, then bump `config/taxRates`.
+- **Dashboard revenue:** Quarter and year-to-date figures bucket payments by invoice issue date, not by payment date.
 - **PDF / web:** If changing PDF download on web, re-validate platform behavior (`Printing.layoutPdf`, save/share).
 
 ## Session Continuity
 
-Last session: 2026-04-19
+Last session: 2026-11-17
 
-Stopped at: Documentation sync - status = complete except expenses
+Stopped at: Planning sync. Next product work is the dashboard ceiling alert and top clients.
 
 Resume file: None

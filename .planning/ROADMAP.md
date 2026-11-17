@@ -4,7 +4,7 @@
 
 Starting from the existing Flutter skeleton (routing, models, i18n scaffold, screens stubbed), this roadmap wires in Firebase and delivers a complete invoicing and tax compliance tool for Moroccan auto-entrepreneurs in six phases. Each phase completes one coherent capability before the next begins — auth gates profile, profile gates invoices, invoices gate declarations, and the dashboard aggregates everything that came before.
 
-**Status (2026-04-19):** Phases **1, 2, 3, 5, and 6** are implemented in the app. **Phase 4 (Expenses)** is the remaining gap.
+**Status (2026-11-17):** Phases **1–5** are implemented. **Phase 6** shows revenue, deadlines, and outstanding invoices. The revenue-ceiling alert and top-clients list are still open.
 
 ## Phases
 
@@ -17,9 +17,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Firebase + Auth** - Wire Firebase to the skeleton and deliver a fully working auth flow with route guards and security rules
 - [x] **Phase 2: Profile + Clients** - Give users a business identity (legal fields, logo, signature) and a client directory so invoices can be created
 - [x] **Phase 3: Invoices + PDF + Payments** - Deliver the core product: invoice creation with legal Moroccan fields, cross-platform PDF export, and payment recording
-- [ ] **Phase 4: Expenses** - Add expense logging so the user's full financial picture is captured before tax declarations are calculated
+- [x] **Phase 4: Expenses** - Add expense logging so the user's full financial picture is captured before tax declarations are calculated
 - [x] **Phase 5: Tax Declarations** - Calculate quarterly IR and CNSS obligations from real revenue data and guide the user through the filing process
-- [x] **Phase 6: Dashboard** - Aggregate all data into a single at-a-glance view of revenue, outstanding invoices, and upcoming deadlines
+- [ ] **Phase 6: Dashboard** - Aggregate all data into a single at-a-glance view of revenue, outstanding invoices, upcoming deadlines, the revenue ceiling, and top clients *(revenue, deadline, and outstanding shipped; ceiling and top clients open)*
 
 ## Phase Details
 
@@ -115,7 +115,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: Expense CRUD — create, edit, delete screens with category picker and period filter — EXPN-01, EXPN-02, EXPN-03
+- [x] 04-01: Expense CRUD — create, edit, delete screens with category picker, month/quarter filter, and optional receipt image — EXPN-01, EXPN-02, EXPN-03, EXPN-V2-01
 
 ---
 
@@ -128,15 +128,15 @@ Plans:
 **Requirements**: DECL-01, DECL-02, DECL-03, DECL-04, DECL-05, DECL-06, DECL-07, DECL-08
 
 **Success Criteria** (what must be TRUE):
-1. During onboarding, user selects their activity category (commercial, artisanal, or liberal) with a plain-language explanation of each — the selection is saved to their profile
-2. For any completed quarter, the app calculates and displays the IR amount due and the CNSS contribution (including the minimum quarterly base) using rates loaded from a Firestore config document — not hardcoded values — with a disclaimer to verify with DGI/CNSS
+1. During onboarding, user selects their activity categories (commercial, artisanal, liberal, services) with a plain-language explanation of each — the selection is saved to their profile
+2. For any quarter, the app calculates IR per activity on paid revenue and a flat CNSS amount from that quarter's total IR (minimum band 300 MAD), using `config/taxRates` or the bundled version-4 defaults, with a disclaimer to verify with DGI/CNSS
 3. User can create a quarterly declaration record that links to the calculated amounts and view a step-by-step guide for filing on the ae.gov.ma portal
 4. User can mark a declaration as filed (recording the date) and view the full history of past declarations with amounts and status
 
 **Plans**: TBD
 
 Plans:
-- [x] 05-01: Tax rate config — populate `/config/taxRates` Firestore document with verified rates (IR by activity type, CNSS rate + plancher), write pure Dart `TaxCalculator` with unit tests — DECL-02, DECL-03, DECL-04
+- [x] 05-01: Tax rate config — `config/taxRates` version 4 (`cnssIrBands` keyed by quarterly IR) plus bundled defaults and `TaxCalculator` unit tests — DECL-02, DECL-03, DECL-04
 - [x] 05-02: Activity category onboarding selector and declaration creation flow — DECL-01, DECL-05, DECL-06
 - [x] 05-03: Filing guide UX, mark-as-filed action, and declaration history screen — DECL-07, DECL-08
 
@@ -148,7 +148,7 @@ Plans:
 
 **Depends on**: Phases 3 and 5 (revenue and declaration data must exist)
 
-**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06, DASH-07
 
 **Success Criteria** (what must be TRUE):
 1. Dashboard shows current quarter revenue total and year-to-date revenue, drawn from paid invoices — figures update when new payments are recorded
@@ -156,12 +156,17 @@ Plans:
 3. Dashboard shows total outstanding invoice amount and a count of overdue invoices
 4. When a user's year-to-date revenue exceeds 80% of their annual ceiling (by activity type), the dashboard displays a revenue ceiling alert
 5. Dashboard shows the top clients by revenue generated (highest turnover first)
+6. Dashboard shows this quarter's estimated declaration (IR + CNSS) from the declaration calculator
+7. Dashboard shows expenses dated in the current quarter, beside quarter revenue
 
 **Plans**: TBD
 
 Plans:
-- [ ] 06-01: Denormalized summary document design and Cloud Function (or client-side trigger) to maintain revenue and invoice counters — DASH-01, DASH-03 *(not shipped: dashboard aggregates client-side / live queries; optional future optimization)*
-- [x] 06-02: Dashboard screen — revenue summary, deadline countdown, outstanding invoices, ceiling alert, top clients — DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+- [ ] 06-01: Denormalized summary document design and Cloud Function (or client-side trigger) to maintain revenue and invoice counters — optional; the dashboard aggregates client-side today
+- [x] 06-02: Dashboard screen — quarter and year-to-date paid revenue, declaration deadline, outstanding amount, overdue count — DASH-01, DASH-02, DASH-03
+- [ ] 06-03: Revenue-ceiling alert when year-to-date paid revenue is within 20% of the annual limit for the activity — DASH-04
+- [ ] 06-04: Top clients by paid revenue — DASH-05
+- [x] 06-05: Current-quarter expenses next to quarter revenue, and estimated declaration (IR + CNSS) using the declaration calculator — DASH-06, DASH-07
 
 ---
 
@@ -175,6 +180,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Firebase + Auth | 3/3 | Complete | 2026 (shipped) |
 | 2. Profile + Clients | 5/5 | Complete | 2026 (shipped) |
 | 3. Invoices + PDF + Payments | 5/5 | Complete | 2026 (shipped) |
-| 4. Expenses | 0/1 | **Not started** | - |
-| 5. Tax Declarations | 3/3 | Complete | 2026 (shipped) |
-| 6. Dashboard | 1/2 | UI shipped (`06-02`); `06-01` optional | 2026 |
+| 4. Expenses | 1/1 | Complete | 2026-11 (shipped) |
+| 5. Tax Declarations | 3/3 | Complete (CNSS formula corrected 2026-11-17) | 2026 |
+| 6. Dashboard | 2/5 | Partial (`06-02`, `06-05` shipped; `06-03` and `06-04` open; `06-01` optional) | — |
