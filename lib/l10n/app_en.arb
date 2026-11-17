@@ -396,5 +396,9 @@
   "onboardingActivitySubtitle": "Choose the category that best describes your auto-entrepreneur activity. It sets which IR rate schedule applies.",
   "onboardingContinue": "Continue to app",
   "onboardingSaved": "Activity category saved.",
-  "onboardingError": "Could not save. Try again."
+  "onboardingError": "Could not save. Try again.",
+  "shortcutRetry": "Retry",
+  "shortcutLoadError": "Could not load invoice setup data. Check your connection and retry.",
+  "shortcutClientRequired": "Add a client before creating your first invoice. Then open New Invoice again.",
+  "shortcutNoPending": "There is no pending invoice shortcut."
 }

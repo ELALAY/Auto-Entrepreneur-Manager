@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="New Invoice"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_new_invoice"
+        android:shortcutShortLabel="@string/shortcut_new_invoice_label"
+        android:shortcutLongLabel="@string/shortcut_new_invoice_label">
+        <intent
+            android:action="com.example.auto_entrepreneur_manager.action.NEW_INVOICE"
+            android:targetPackage="com.example.auto_entrepreneur_manager"
+            android:targetClass="com.example.auto_entrepreneur_manager.MainActivity">
+            <extra android:name="shortcut_id" android:value="New Invoice" />
+        </intent>
+    </shortcut>
+</shortcuts>

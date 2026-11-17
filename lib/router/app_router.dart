@@ -22,6 +22,8 @@ import '../features/onboarding/activity_onboarding_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/services/service_catalog_screen.dart';
 import '../providers/auth_provider.dart';
+import '../shortcuts/shortcut_inbox.dart';
+import '../shortcuts/new_invoice_shortcut_gate.dart';
 import '../shell/main_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -31,6 +33,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 class _AuthListenable extends ChangeNotifier {
   _AuthListenable(Ref ref) {
     ref.listen(authStateProvider, (_, __) => notifyListeners());
+    ref.listen(shortcutInboxProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -55,10 +58,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!isLoggedIn && !isAuthRoute) return '/login';
       // New accounts must pick activity category before the shell (DECL-01).
       if (isLoggedIn && path == '/sign-up') return '/onboarding/activity';
+      if (isLoggedIn) {
+        final resume = shortcutResumeRedirect(
+          path: path,
+          pending: ref.read(shortcutInboxProvider).pending != null,
+        );
+        if (resume != null) return resume;
+      }
       if (isLoggedIn && path == '/login') return '/dashboard';
       return null;
     },
     routes: [
+      GoRoute(
+        path: shortcutGatePath,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const NewInvoiceShortcutGate(),
+      ),
       GoRoute(
         path: '/login',
         parentNavigatorKey: _rootNavigatorKey,
@@ -172,8 +187,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       GoRoute(
                         path: 'add',
-                        builder: (context, state) =>
-                            const ClientFormScreen(),
+                        builder: (context, state) => const ClientFormScreen(),
                       ),
                       GoRoute(
                         path: ':clientId',

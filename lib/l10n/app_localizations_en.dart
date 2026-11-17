@@ -1100,4 +1100,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingError => 'Could not save. Try again.';
+
+  @override
+  String get shortcutRetry => 'Retry';
+
+  @override
+  String get shortcutLoadError =>
+      'Could not load invoice setup data. Check your connection and retry.';
+
+  @override
+  String get shortcutClientRequired =>
+      'Add a client before creating your first invoice. Then open New Invoice again.';
+
+  @override
+  String get shortcutNoPending => 'There is no pending invoice shortcut.';
 }

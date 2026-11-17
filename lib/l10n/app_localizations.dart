@@ -2085,6 +2085,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not save. Try again.'**
   String get onboardingError;
+
+  /// No description provided for @shortcutRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get shortcutRetry;
+
+  /// No description provided for @shortcutLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load invoice setup data. Check your connection and retry.'**
+  String get shortcutLoadError;
+
+  /// No description provided for @shortcutClientRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a client before creating your first invoice. Then open New Invoice again.'**
+  String get shortcutClientRequired;
+
+  /// No description provided for @shortcutNoPending.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no pending invoice shortcut.'**
+  String get shortcutNoPending;
 }
 
 class _AppLocalizationsDelegate

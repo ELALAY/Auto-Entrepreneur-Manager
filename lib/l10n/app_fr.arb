@@ -362,5 +362,9 @@
   "onboardingActivitySubtitle": "Choisissez la catégorie qui correspond le mieux à votre activité d'auto-entrepreneur. Elle détermine le barème d'IR appliqué.",
   "onboardingContinue": "Accéder à l'application",
   "onboardingSaved": "Catégorie d'activité enregistrée.",
-  "onboardingError": "Enregistrement impossible. Réessayez."
+  "onboardingError": "Enregistrement impossible. Réessayez.",
+  "shortcutRetry": "Réessayer",
+  "shortcutLoadError": "Impossible de charger les données de facturation. Vérifiez votre connexion et réessayez.",
+  "shortcutClientRequired": "Ajoutez un client avant de créer votre première facture. Puis ouvrez à nouveau New Invoice.",
+  "shortcutNoPending": "Aucun raccourci de facture en attente."
 }

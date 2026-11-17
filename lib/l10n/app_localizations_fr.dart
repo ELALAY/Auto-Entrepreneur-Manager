@@ -1108,4 +1108,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingError => 'Enregistrement impossible. Réessayez.';
+
+  @override
+  String get shortcutRetry => 'Réessayer';
+
+  @override
+  String get shortcutLoadError =>
+      'Impossible de charger les données de facturation. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get shortcutClientRequired =>
+      'Ajoutez un client avant de créer votre première facture. Puis ouvrez à nouveau New Invoice.';
+
+  @override
+  String get shortcutNoPending => 'Aucun raccourci de facture en attente.';
 }

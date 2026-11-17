@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="shortcut_new_invoice_label">New Invoice</string>
     <string name="widget_new_invoice_title">new AE invoice</string>
     <string name="widget_new_invoice_description">Open the new invoice screen</string>
     <string name="widget_new_invoice_label">New AE invoice</string>
